@@ -2,9 +2,9 @@
 #ifndef _CONFIG_H_			      // Prevent double inclusion
 #define _CONFIG_H_
 
-#define CLINT      1
-#define MARK       2
-#define JOHN       3
+#define CLINT      1          // Preference definition CLINT
+#define MARK       2          // Preference definition MARK
+#define JOHN       3          // Preference definition JOHN
 
 #define ETHERKIT   1          // SI5351 Etherkit Driver
 #define MCU        2          // SI5351 MCU Driver
@@ -66,7 +66,7 @@
  * 
  */
 
-#define MC_TYPE S2MINI 
+#define MC_TYPE R8N16 
 
 
 //-----------------From this point forward you do not need to set anything
@@ -94,24 +94,24 @@
 ----------------------------------------------------------*/
 
 #define CORRECTION      0ULL      //tuned on 20m at 14.250 - 8605000 typically 116 x freq = correction change
-#define CORRECTION_MCU    504       //tuned on 20m at 14.250 - 8605000 typically 2.881 x freq = correction change
+#define CORRECTION_MCU    1127       //tuned on 20m at 14.250 - 8605000 typically 2.881 x freq = correction change
 #define CRYSTAL      25000000     // use 27000000 for QRP Labs (27MHz crystal) or 0 for generic module (25 MHz crystal)
 #define CRYSTAL_MCU  25000000     // use 27000000 for QRP Labs or 25000000 for generic module
 
 //Calculated how low the output frequency is / go above frequency tunes better
 //Radio    Etherkit   MCU
-//TK7490 - 40600ULL    504  5.52 MHz C.F.
+//TK7490 - 40600ULL    504  5.52 MHz C.F. Atlas C.O.
 //Test3  -152500ULL   3124
 //Test4  - 74200ULL   1217  GUESS
 //Test5  - 74300ULL   1155/S2  1852/S3 
 //Test6  - 59660ULL    938
 //Test7  -157860ULL   3945
-//TM8736 - 69200ULL   1127  GUESS  T2 became TM8736
+//TM8736 - 69200ULL   1127  5.645 MHz C.F. Si5351 C.O.  T2 
 //TM???? -  3300ULL   -450         moved Test1 to this radio
 //TM???  - 60403ULL    964  GUESS  for radio with Drake Crystal Filter
 //Feel free to add your serial number and calibration constant here
 
-#define CF OLDER                  //OLDER for 5520 CO, NEWER for 5645 CO and DRAKE for Drake CF
+#define CF NEWER                  //OLDER for 5520 CO, NEWER for 5645 CO and DRAKE for Drake CF
 
 /*-------------------------------------------------------
    Frequency settings
@@ -190,7 +190,7 @@
  * IF "STATUS" is set to RUN then the radio will operate normally
  */
 
-#define P_STATUS TESTING              // TESTING   RUN
+#define P_STATUS RUN              // TESTING   RUN
 
 /*
  * There are two choices for the carrier oscilator for the Radio
@@ -198,68 +198,68 @@
  * IF "CO" is set to SI5351_CO then the radio is using the si5351 CLK1 for the CO
  */
 
-#define CO ATLAS_CO             //Internal CO ATLAS_CO, si5351 CO SI5351_CO
+#define CO SI5351_CO             //Internal CO ATLAS_CO, si5351 CO SI5351_CO
 
 
 
-#if DISP_SIZE == SMALL_DISP			// Define things for the ST7785 small display (128x160)
+#if DISP_SIZE == SMALL_DISP       // Define things for the ST7785 small display (128x160)
 
-	#define DISP_W	    160				// Display width (in landscape mode)
-	#define DISP_H	    128				// Display height
-  #define DISP_L        0       // Dial Display begins to center dial
- 
-	
-	#define	D_R			    200				// Dial radius (if 45000, Linear scale)
-	#define	DIAL_FONT		0.4				// Font -  0, 1, or 2 (Defaults to '0' in "dial.cpp")
-	#define	DIAL_SPACE	 30				// Number of pixels between the main and sub arcs
-
-	#define	DP_WIDTH		  1				// Width of Dial ponter
-	#define	DP_LEN	     60				// Normal length of Dial pointer
-  #define DP_POS        0       // Position of Dial pointer
-
-  #define F1_POS       10       // Vertical Position of the frequency box
-  #define T1_POS       44       // Align the secondary text information on this line
-  
-	
-#endif
-
-#if DISP_SIZE == LARGE_DISP				// Define things for the large display (240x320)
-
-	#define DISP_W	     320				// Display width (in landscape mode)
-	#define DISP_H	     240				// Display height
+  #define DISP_W       160        // Display width (in landscape mode)
+  #define DISP_H       128        // Display height
   #define DISP_L         0        // Dial Display begins to center dial
-  
+  #define DISP_TM        0        // Top Margin moves Dial up and down
 	
-	#define	D_R			     250				// Dial radius (if 45000, Linear scale)
-	#define	DIAL_FONT	  0.65				// Font -  0, 1, or 2 (Defaults to '0' in "dial.cpp")
-	#define	DIAL_SPACE    45				// Number of pixels between the main and sub arcs
+  #define  D_R         200        // Dial radius (if 45000, Linear scale)
+  #define  DIAL_FONT   0.4        // Font -  0, 1, or 2 (Defaults to '0' in "dial.cpp")
+  #define  DIAL_SPACE   30        // Number of pixels between the main and sub arcs
 
-	#define	DP_WIDTH	     1		  	// Width of Dial pointer 0,1 OR 2
-	#define	DP_LEN		   180				// Length of Dial pointer
-	#define	DP_POS		    10				// Length Dial pointer extends above dial
+  #define  DP_WIDTH      1        // Width of Dial ponter
+  #define  DP_LEN       60        // Normal length of Dial pointer
+  #define DP_POS         0        // Position of Dial pointer
 
-  #define F1_POS        15        // Vertical Position of the frequency box
-  #define T1_POS        60        // Align the secondary text information on this line
+  #define F1_POS        10        // Vertical Position of the frequency box
+  #define T1_POS        44        // Align the secondary text information on this line
+   
+	
+#endif
+
+#if DISP_SIZE == LARGE_DISP       // Define things for the large display (240x320)
+
+  #define DISP_W        320       // Display width (in landscape mode)
+  #define DISP_H        240       // Display height
+  #define DISP_L          0       // Dial Display begins to center dial
+  #define DISP_TM        60       // Top Margin moves Dial up and down
+	
+  #define	D_R          250      // Dial radius (if 45000, Linear scale)
+  #define	DIAL_FONT   0.65      // Font -  0, 1, or 2 (Defaults to '0' in "dial.cpp")
+  #define	DIAL_SPACE    45      // Number of pixels between the main and sub arcs
+
+  #define	DP_WIDTH       1      // Width of Dial pointer 0,1 OR 2
+  #define	DP_LEN       180      // Length of Dial pointer
+  #define	DP_POS        10      // Length Dial pointer extends above dial
+
+  #define F1_POS          15      // Vertical Position of the frequency box
+  #define T1_POS          60      // Align the secondary text information on this line
 
 #endif
 
-#if DISP_SIZE == CUSTOM_DISP		  // Define things John's display (1.9" display 170x320)
+#if DISP_SIZE == CUSTOM_DISP      // Define things John's display (1.9" display 170x320)
 
-	#define DISP_W	     320				// Display width in landscape mode  260 280 300 320
-	#define DISP_H	     170				// Display height full height
-  #define DISP_L        20        // Dial Display offset from center Normally set to 0 set to 8 for short 16 pixels
-  
+  #define DISP_W         320      // Display width in landscape mode  260 280 300 320
+  #define DISP_H         170      // Display height full height
+  #define DISP_L          16      // Dial Display offset from center Normally set from 0 set to 16 for short 16 pixels
+  #define DISP_TM         30      // Top Margin moves Dial up and down
 	
-	#define	D_R		       250				// Dial radius (if 45000, Linear scale)
-	#define	DIAL_FONT   0.65		    // Dial Font width is multiplied by DIAL_FONT height is proportional to width
-	#define	DIAL_SPACE    45		  	// Number of pixels between the main and sub arcs
+  #define	D_R          250      // Dial radius (if 45000, Linear scale)
+  #define	DIAL_FONT   0.65      // Dial Font width is multiplied by DIAL_FONT height is proportional to width
+  #define	DIAL_SPACE    45      // Number of pixels between the main and sub arcs
 
-	#define	DP_WIDTH	     1				// Width of Dial pointer
-	#define	DP_LEN		   100		    // Length of Dial pointer
-	#define DP_POS        10        // Length Dial pointer extends above dial
+  #define	DP_WIDTH       1      // Width of Dial pointer
+  #define	DP_LEN       100      // Length of Dial pointer
+  #define DP_POS          10      // Length Dial pointer extends above dial
 	
-	#define F1_POS        24        // Vertical Position of the frequency box 14 60    32,14
-  #define T1_POS        70        // Align the secondary text information on this line
+  #define F1_POS          24      // Vertical Position of the frequency box 14 60    32,14
+  #define T1_POS          70      // Align the secondary text information on this line
 
 #endif
 
@@ -269,33 +269,33 @@
  *	and "display.h"	files and converted from variables to definitions.
  */
 
-#define		F_REV				     1		// Frequency increases CW if '1'; CCW (ACW) if '0'
-#define	  F_MAIN_OUTSIDE	 0		// 0 - Main dial is inside;  1 - Main dial is outside
+#define   F_REV            1       // Frequency increases CW if '1'; CCW (ACW) if '0'
+#define   F_MAIN_OUTSIDE   0       // 0 - Main dial is inside;  1 - Main dial is outside
 
 /*
  *	Changing this to anything other than "10000" does weird things with the
  *	displayed numerical values on both dial scales. Still needs to be investigated.
  */
 
-#define		FREQ_TICK_MAIN	 10000	// Tick labels on main dial (if 10000: 10kHz / else： 100kHz)
-#define   FREQ_TICK_SUB     1000
-#define		TICK_PITCH_MAIN		9.0	  // Main Tick Pitch (note small changes make a big difference)
-#define		TICK_PITCH_SUB		9.5	  // Sub Tick Pitch  (try not to go below 4.0)
+#define   FREQ_TICK_MAIN   10000   // Tick labels on main dial (if 10000: 10kHz / else： 100kHz)
+#define   FREQ_TICK_SUB     1000   // Tick labels on sub dial
+#define   TICK_PITCH_MAIN    9.0   // Main Tick Pitch (note small changes make a big difference)
+#define   TICK_PITCH_SUB     9.5   // Sub Tick Pitch  (try not to go below 4.0)
 
-#define		TICK_WIDTH1			 3.0		// Width of Tick
-#define   TICK_WIDTH2      4.0    // Width of Tick
-#define   TICK_WIDTH3      4.5    // Width of Tick
+#define   TICK_WIDTH1        3.0    // Width of Tick
+#define   TICK_WIDTH2        4.0    // Width of Tick
+#define   TICK_WIDTH3        4.5    // Width of Tick
 
-#define		TICK_MAIN1			 5		// Length of Main Tick(1)
-#define		TICK_MAIN5			14		// Length of Main Tick(5)
-#define		TICK_MAIN10			18		// Length of Main Tick(10)
+#define   TICK_MAIN1           5    // Length of Main Tick(1)
+#define   TICK_MAIN5          14    // Length of Main Tick(5)
+#define   TICK_MAIN10         18    // Length of Main Tick(10)
 
-#define		TICK_SUB1			   5		// Length of Sub Tick(1)
-#define		TICK_SUB5		  	14		// Length of Sub Tick(5)
-#define		TICK_SUB10			18		// Length of Sub Tick(10)
+#define   TICK_SUB1            5    // Length of Sub Tick(1)
+#define   TICK_SUB5           14    // Length of Sub Tick(5)
+#define   TICK_SUB10          18    // Length of Sub Tick(10)
 
-#define		TNCL_MAIN		  	22		// Space between Number and Tick (Main)
-#define		TNCL_SUB		  	22		// Space between Number and Tick (Sub)
+#define   TNCL_MAIN           22    // Space between Number and Tick (Main)
+#define   TNCL_SUB            22    // Space between Number and Tick (Sub)
 
 
 /*
@@ -308,13 +308,13 @@
  *	These definitions are the 24 bit color codes in red, green, blue format.
  */
 
-#define		CL_GREY			0xA0A0A0UL		// 
-#define		CL_BLACK		0x000000UL		// 
-#define		CL_WHITE		0xFFFFFFUL		// 
-#define		CL_RED			0xFF0000UL		// 
-#define		CL_GREEN		0x00FF00UL		// 
-#define		CL_LT_BLUE	0x00FFFFUL		// 
-#define		CL_ORANGE		0xFFD080UL		// 
+#define   CL_GREY     0xA0A0A0UL		// 
+#define   CL_BLACK    0x000000UL		// 
+#define   CL_WHITE    0xFFFFFFUL		// 
+#define   CL_RED      0xFF0000UL		// 
+#define   CL_GREEN    0x00FF00UL		// 
+#define   CL_LT_BLUE  0x00FFFFUL		// 
+#define   CL_ORANGE   0xFFD080UL		// 
 #define   CL_CYAN     0x00FFFFUL
 #define   CL_BLUE     0x0000FFUL
 #define   CL_YELLOW   0xFFFF00UL
@@ -329,31 +329,31 @@
  */
 
 #if PREFERENCE == CLINT
-#define		CL_BG			    CL_BLACK		 // Display background (Black)
-#define		CL_POINTER		CL_RED		   // Dial pointer (Red)
-#define		CL_TICK_MAIN	CL_GREEN     // Main Ticks (Lime green)
-#define		CL_NUM_MAIN		CL_WHITE   	 // Main dial numbers (White)
-#define		CL_TICK_SUB		CL_SKYBLUE   // Sub Ticks (Light blue)
-#define		CL_NUM_SUB		CL_WHITE     // Sub Numbers (White)
-#define		CL_DIAL_BG		CL_BLACK		 // Dial background (Black)
-#define		CL_SPLASH		  CL_LT_BLUE	 // Splash screen text
-#define   CL_FREQ_BOX   CL_CYAN      // Numerical frequency box
-#define   CL_F_NUM      CL_ORANGE    // Numerical frequency
-#define   CL_NUM        CL_YELLOW    // Numerical small numbers
-#define   CL_NUM_O      CL_RED       // Step color in CUSTOM_DISP
-#define   CL_NUM_NORM   CL_WHITE     // Normal Text inside box
-#define   DP_POS           0    // Length Dial pointer extends above dial
-#define   DIAL_SPACE      40    // Number of pixels between the main and sub arcs
-#define   TICK_SUB1        8    // Length of Sub Tick(1)
-#define   TICK_SUB5       14    // Length of Sub Tick(5)
-#define   TICK_SUB10      18    // Length of Sub Tick(10)
-#define   TICK_MAIN1       4    // Length of Main Tick(1)
-#define   TICK_MAIN5      14    // Length of Main Tick(5)
-#define   TICK_MAIN10     18    // Length of Main Tick(10)
-#define   TNCL_MAIN       18    // Space between Number and Tick (Main)
-#define   TNCL_SUB        18    // Space between Number and Tick (Sub)
-#define TICK_PITCH_MAIN 10.5    // Main Tick Pitch (note small changes make a big difference)
-#define TICK_PITCH_SUB   9.8    // Sub Tick Pitch  (try not to go below 4.0)
+#define   CL_BG          CL_BLACK    // Display background (Black)
+#define   CL_POINTER     CL_RED      // Dial pointer (Red)
+#define   CL_TICK_MAIN   CL_GREEN    // Main Ticks (Lime green)
+#define   CL_NUM_MAIN    CL_WHITE    // Main dial numbers (White)
+#define   CL_TICK_SUB    CL_SKYBLUE  // Sub Ticks (Light blue)
+#define   CL_NUM_SUB     CL_WHITE    // Sub Numbers (White)
+#define   CL_DIAL_BG     CL_BLACK    // Dial background (Black)
+#define   CL_SPLASH      CL_LT_BLUE  // Splash screen text
+#define   CL_FREQ_BOX    CL_CYAN     // Numerical frequency box
+#define   CL_F_NUM       CL_ORANGE   // Numerical frequency
+#define   CL_NUM         CL_YELLOW   // Numerical small numbers
+#define   CL_NUM_O       CL_RED      // Step color in CUSTOM_DISP
+#define   CL_NUM_NORM    CL_WHITE    // Normal Text inside box
+#define   DP_POS           0         // Length Dial pointer extends above dial
+#define   DIAL_SPACE      40         // Number of pixels between the main and sub arcs
+#define   TICK_SUB1        8         // Length of Sub Tick(1)
+#define   TICK_SUB5       14         // Length of Sub Tick(5)
+#define   TICK_SUB10      18         // Length of Sub Tick(10)
+#define   TICK_MAIN1       4         // Length of Main Tick(1)
+#define   TICK_MAIN5      14         // Length of Main Tick(5)
+#define   TICK_MAIN10     18         // Length of Main Tick(10)
+#define   TNCL_MAIN       18         // Space between Number and Tick (Main)
+#define   TNCL_SUB        18         // Space between Number and Tick (Sub)
+#define TICK_PITCH_MAIN 10.5         // Main Tick Pitch (note small changes make a big difference)
+#define TICK_PITCH_SUB   9.8         // Sub Tick Pitch  (try not to go below 4.0)
 #define CORRECTION       0ULL
 #define CORRECTION_MCU   0
 #define EncoderStep     12
