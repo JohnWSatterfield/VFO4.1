@@ -230,36 +230,36 @@
   #define DISP_L          0       // Dial Display begins to center dial
   #define DISP_TM        60       // Top Margin moves Dial up and down
 	
-  #define	D_R          250      // Dial radius (if 45000, Linear scale)
-  #define	DIAL_FONT   0.65      // Font -  0, 1, or 2 (Defaults to '0' in "dial.cpp")
-  #define	DIAL_SPACE    45      // Number of pixels between the main and sub arcs
+  #define D_R           250      // Dial radius (if 45000, Linear scale)
+  #define DIAL_FONT    0.65      // Font -  0, 1, or 2 (Defaults to '0' in "dial.cpp")
+  #define DIAL_SPACE     45      // Number of pixels between the main and sub arcs
 
-  #define	DP_WIDTH       1      // Width of Dial pointer 0,1 OR 2
-  #define	DP_LEN       180      // Length of Dial pointer
-  #define	DP_POS        10      // Length Dial pointer extends above dial
+  #define DP_WIDTH        1      // Width of Dial pointer 0,1 OR 2
+  #define DP_LEN        180      // Length of Dial pointer
+  #define DP_POS         10      // Length Dial pointer extends above dial
 
-  #define F1_POS          15      // Vertical Position of the frequency box
-  #define T1_POS          60      // Align the secondary text information on this line
+  #define F1_POS         15      // Vertical Position of the frequency box
+  #define T1_POS         60      // Align the secondary text information on this line
 
 #endif
 
-#if DISP_SIZE == CUSTOM_DISP      // Define things John's display (1.9" display 170x320)
+#if DISP_SIZE == CUSTOM_DISP     // Define things John's display (1.9" display 170x320)
 
-  #define DISP_W         320      // Display width in landscape mode  260 280 300 320
-  #define DISP_H         170      // Display height full height
-  #define DISP_L          16      // Dial Display offset from center Normally set from 0 set to 16 for short 16 pixels
-  #define DISP_TM         30      // Top Margin moves Dial up and down
+  #define DISP_W         320     // Display width in landscape mode  260 280 300 320
+  #define DISP_H         170     // Display height full height
+  #define DISP_L          16     // Dial Display offset from center Normally set from 0 set to 16 for short 16 pixels
+  #define DISP_TM         30     // Top Margin moves Dial up and down
 	
-  #define	D_R          250      // Dial radius (if 45000, Linear scale)
-  #define	DIAL_FONT   0.65      // Dial Font width is multiplied by DIAL_FONT height is proportional to width
-  #define	DIAL_SPACE    45      // Number of pixels between the main and sub arcs
+  #define D_R            250     // Dial radius (if 45000, Linear scale)
+  #define DIAL_FONT     0.65     // Dial Font width is multiplied by DIAL_FONT height is proportional to width
+  #define DIAL_SPACE      45     // Number of pixels between the main and sub arcs
 
-  #define	DP_WIDTH       1      // Width of Dial pointer
-  #define	DP_LEN       100      // Length of Dial pointer
-  #define DP_POS          10      // Length Dial pointer extends above dial
+  #define DP_WIDTH         1     // Width of Dial pointer
+  #define DP_LEN         100     // Length of Dial pointer
+  #define DP_POS          10     // Length Dial pointer extends above dial
 	
-  #define F1_POS          24      // Vertical Position of the frequency box 14 60    32,14
-  #define T1_POS          70      // Align the secondary text information on this line
+  #define F1_POS          24     // Vertical Position of the frequency box 14 60    32,14
+  #define T1_POS          70     // Align the secondary text information on this line
 
 #endif
 
