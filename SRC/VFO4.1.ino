@@ -275,8 +275,8 @@ void setup() {
     set_frequency();                          // Set initial frequency of Si5351 CLK0
     #if CO == SI5351_CO
       si5351.setPower(1,SIOUT_4mA);             // Set output power of CLK1 of Si5351
-      si5351.setFreq(ifFreq,1);                 // Set initial frequency of si5351 CLK1
       si5351.enable(1);                         // enable output of CLK1
+      si5351.setFreq(ifFreq,1);                 // Set initial frequency of si5351 CLK1
     #endif
     si5351.reset();                           // Rreset PLL of Si5351
     i2c_found = si5351.isEnabled(0);          // See if si5351 is on
