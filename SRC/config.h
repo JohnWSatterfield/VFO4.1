@@ -37,9 +37,9 @@
 
 //----------- The following are Feature Choices - Comment out if not using-------
 
-#define CLOCK_OK              //comment out if no clock
+//#define CLOCK_OK              //comment out if no clock
 //#define LOCK_OK               //comment out if no Lock
-#define SHORT16_OK            //comment out if display normal length
+//#define SHORT16_OK            //comment out if display normal length
 #define MEM_OK                //comment out if not using memory features
 //#define SS1PIN_OK           //DIGITAL but using SS1 Pin
 
@@ -66,7 +66,7 @@
  * 
  */
 
-#define MC_TYPE R8N16 
+#define MC_TYPE S3ZERO
 
 
 //-----------------From this point forward you do not need to set anything
@@ -94,7 +94,7 @@
 ----------------------------------------------------------*/
 
 #define CORRECTION      0ULL      //tuned on 20m at 14.250 - 8605000 typically 116 x freq = correction change
-#define CORRECTION_MCU    1127       //tuned on 20m at 14.250 - 8605000 typically 2.881 x freq = correction change
+#define CORRECTION_MCU    0       //tuned on 20m at 14.250 - 8605000 typically 2.881 x freq = correction change
 #define CRYSTAL      25000000     // use 27000000 for QRP Labs (27MHz crystal) or 0 for generic module (25 MHz crystal)
 #define CRYSTAL_MCU  25000000     // use 27000000 for QRP Labs or 25000000 for generic module
 
@@ -190,7 +190,7 @@
  * IF "STATUS" is set to RUN then the radio will operate normally
  */
 
-#define P_STATUS RUN              // TESTING   RUN
+#define P_STATUS TESTING              // TESTING   RUN
 
 /*
  * There are two choices for the carrier oscilator for the Radio
@@ -198,7 +198,7 @@
  * IF "CO" is set to SI5351_CO then the radio is using the si5351 CLK1 for the CO
  */
 
-#define CO SI5351_CO             //Internal CO ATLAS_CO, si5351 CO SI5351_CO
+#define CO ATLAS_CO             //Internal CO ATLAS_CO, si5351 CO SI5351_CO
 
 
 

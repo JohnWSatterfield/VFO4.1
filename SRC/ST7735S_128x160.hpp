@@ -41,7 +41,7 @@
 //Position of dial display
 #define center_offset  DISP_L/2
 #define top_position   55
-#define top_margin     0
+#define top_margin     DISP_TM
 
 
 //dial radius---------------------------------------------------

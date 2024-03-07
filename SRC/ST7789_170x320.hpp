@@ -47,7 +47,7 @@
   #define center_offset  0
 #endif
 #define top_position    60  // 60 top of dial - larger moves it up, smaller moves it down
-#define top_margin      20  // 
+#define top_margin      DISP_TM  // 
 
 
 

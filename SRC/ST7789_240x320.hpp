@@ -45,7 +45,7 @@
 #define center_offset  0  // move dial left or right of centr
 #define center_offset  0
 #define top_position    60  // 60 top of dial - larger moves it up, smaller moves it down
-#define top_margin      60 // 
+#define top_margin      DISP_TM // 
 
 //dial radius---------------------------------------------------
 #define dial_radius D_R  //Dial radius (if 10000, Linear scale) 280

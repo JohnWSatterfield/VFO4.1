@@ -268,7 +268,7 @@ void setup() {
 
 //-----------------------Set up the MCU si5351 Driver ------------------
 #if SI5351_DRV == MCU
-    si5351.init(CRYSTAL_MCU);        // Initialize the crystal frequency
+    i2c_found = si5351.init(CRYSTAL_MCU);        // Initialize the crystal frequency
     si5351.correction(CORRECTION_MCU);        // Set correction tuning high 150 Hz
     si5351.setPower(0,SIOUT_8mA);             // Set output power of CLI0 Si5351
     si5351.enable(0);                         // enable output of CLK0
@@ -276,7 +276,7 @@ void setup() {
     #if CO == SI5351_CO
       si5351.setPower(1,SIOUT_4mA);             // Set output power of CLK1 of Si5351
       si5351.enable(1);                         // enable output of CLK1
-      si5351.setFreq(ifFreq,1);                 // Set initial frequency of si5351 CLK1
+      si5351.setFreq(1,ifFreq);                 // Set initial frequency of si5351 CLK1
     #endif
     si5351.reset();                           // Rreset PLL of Si5351
     i2c_found = si5351.isEnabled(0);          // See if si5351 is on
@@ -914,7 +914,7 @@ void display_Band() {                         //code to display the current sele
   #endif
   #if DISP_SIZE == CUSTOM_DISP          // if custom display
     #ifndef SHORT16_OK                  // Compiler directive if full screen
-     sprites[flip].setCursor(10, T1_POS );  // place cursor here
+     sprites[flip].setCursor(8, T1_POS );  // place cursor here
     #endif
     #ifdef SHORT16_OK                   // Compiler directive reduce screen by 16 pixels
      sprites[flip].setCursor(24, T1_POS );  // place cursor here
@@ -1098,7 +1098,10 @@ void display_Mem() {                  //code to display the current memory A, B,
   #endif
   #if DISP_SIZE == CUSTOM_DISP         // If custom display
     #ifndef SHORT16_OK                 // Compiler directive if display full size
-     sprites[flip].setCursor(254, T1_POS );// Place cursor
+     sprites[flip].setCursor(254, T1_POS );// Place cursor      
+      #if PREFERENCE == CLINT
+        sprites[flip].setCursor(248, T1_POS );// Place cursor
+      #endif
     #endif
     #ifdef SHORT16_OK                  // Compiler directive if display 16 pixels smaller
      sprites[flip].setCursor(254, T1_POS );// Place cursor here
@@ -1110,7 +1113,7 @@ void display_Mem() {                  //code to display the current memory A, B,
 //----------------------------code to handle frequency Display 2 --------------
 void display_Freq() {            // Code to display digital frequency 
       char str[12], strl[24];    // strings to manipulate appearance of the digital frequency 
-      sprintf(str, "%3d.%03d.%03d",Dial_frq/1000000, (Dial_frq%1000000)/1000, (Dial_frq%1000) );
+      sprintf(str, "%3d.%03d %03d",Dial_frq/1000000, (Dial_frq%1000000)/1000,(Dial_frq%1000) );
         // sprintf converts numbers into strings
       int cc=0;                  // integer for manipulating the string
       if(str[0]=='0') {          // gets rid of leading 0
