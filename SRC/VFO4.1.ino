@@ -336,7 +336,9 @@ void setup() {
       VFOsState = LOW;                //set flag VFOsState to LOW
     #endif
     #if P_STATUS == RUN               //if processor status is set to RUN
-      VFOState = digitalRead(VFO);    //read the input of VFO from pin 4 - comment out to test 
+      #ifdef VFO_OK
+       VFOState = digitalRead(VFO);    //read the input of VFO  - comment out to test 
+      #endif
       setsiflag();                    //Internal / external VFO routine to turn VFO on or off 
     #endif
 
@@ -1307,4 +1309,4 @@ void display_write() {                           // procedure to write to the sc
    #endif
    sprites[flip].pushSprite(&lcd, 0, sprite_height); // Send 2nd half of dial to screen
    flip = !flip;                                 // clear sprite flag
-} // End of Display process
+} // End of Display proces0s

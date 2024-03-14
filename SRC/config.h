@@ -29,7 +29,7 @@
 //----------From this point forward you must sed definitions to run properly
 //          The Preference section on Line 305-387 should allow you to run
 
-#define PREFERENCE JOHN      //PREFERENCE can be defined as CLINT MARK JOHN
+#define PREFERENCE MARK      //PREFERENCE can be defined as CLINT MARK JOHN
 
 #define BAND_TYPE DIGITAL     // BAND_TYPE is DIGITAL (PCF8574) or ANALOG (resistor matrix)
 
@@ -40,8 +40,9 @@
 //#define CLOCK_OK              //comment out if no clock
 //#define LOCK_OK               //comment out if no Lock
 //#define SHORT16_OK            //comment out if display normal length
-#define MEM_OK                //comment out if not using memory features
-//#define SS1PIN_OK           //DIGITAL but using SS1 Pin
+//#define MEM_OK                //comment out if not using memory features
+//#define SS1PIN_OK             //DIGITAL but using SS1 Pin
+//#define VFO_OK                //comment out if not using VFO pin
 
 //----------- The following are Micro controller choices
 #define WROVER 2  //Esp32 Wrover separate serial SPI display
@@ -52,6 +53,7 @@
 #define T7S3   7  //ESP32-S3 LilyGo T7 Ver 1.1 plug in replacement for CLINT
 #define S2MINI 8  //Esp32-S2 mini separate serial SPI display
 #define RP2040 9  //Waveshare RP2040-zero
+#define D1MINI 10 //ESP32-D1-Mini
 
 /*
  * There are 5 choices for the MC Microcontroller type
@@ -66,7 +68,7 @@
  * 
  */
 
-#define MC_TYPE S3ZERO
+#define MC_TYPE S3MINI
 
 
 //-----------------From this point forward you do not need to set anything
@@ -155,7 +157,7 @@
  *  screen size. The fonts used on the splash screen also vary with the screen size.
  */
 
-#define DISP_SIZE CUSTOM_DISP      // SMALL_DISP  CUSTOM_DISP  LARGE_DISP
+#define DISP_SIZE SMALL_DISP      // SMALL_DISP  CUSTOM_DISP  LARGE_DISP
 
 
 /*
@@ -190,7 +192,7 @@
  * IF "STATUS" is set to RUN then the radio will operate normally
  */
 
-#define P_STATUS TESTING              // TESTING   RUN
+#define P_STATUS RUN              // TESTING   RUN
 
 /*
  * There are two choices for the carrier oscilator for the Radio
@@ -402,6 +404,7 @@
 #undef  MEM_OK
 #undef  CLOCK_OK
 #undef  LOCK_OK
+#undef  VFO_OK
 #endif
 
 
@@ -412,7 +415,7 @@
 //------------Defined MC_TYPE---------------------------
 
 #if MC_TYPE == WROVER         //Compiler directive for Lilygo T7 Ver 1.5 
-#define INTERRUPTED_PIN 16    // user defined connection to PCF8574 interrupt pin
+#define INTERRUPTED_PIN 27    // user defined connection to PCF8574 interrupt pin try with 27
 #define cw        2           //mode slector in cw position
 #define DT       25           // DT Encoder A pin, connected to ESP32 pin 4 (GPIO4)
 #define CLK       4           // CLK Encoder B pin, connected to ESP32 pin 25 (GPIO25)
@@ -561,7 +564,29 @@
 #define TFT_RST  44 //     14 or 44 37
 #endif
 
-
+#if MC_TYPE == D1MINI         //Compiler directive for Lilygo T7 Ver 1.5 
+#define INTERRUPTED_PIN 17    // user defined connection to PCF8574 interrupt pin
+#define cw        2           //mode slector in cw position
+#define DT       25           // DT Encoder A pin, connected to ESP32 pin 4 (GPIO4)
+#define CLK       4           // CLK Encoder B pin, connected to ESP32 pin 25 (GPIO25)
+#define MEM      33           //memory
+#define STEP     34           //step
+#define SCAN     35           //scan (not in use) 
+#define TSDA     21           //Default pins defined in si5351.cpp  
+#define TSCL     22           //Default pins defined in si5351.cpp
+#define VFO      26           //Turn internal VFO on_off uses uses jumper on 9 pin plug
+#define SS1      19           //Norm/opp side band position (pin 13 is inside and pin 12 is outside)
+#define BAND     17           //Analog input from resistor network 80m 3243, 40m 2431, 20m 1622, 15m 813, 10m 0
+//#define TX1                 //Transmit sig input to bypass LP Filter (not in use) 
+#define OPT      14           //Free for opt_change function
+#define TFT_MISO -1           //     13 or 37 Not connected -1
+#define TFT_CS    5           //     10 or 34 or 5
+#define TFT_MOSI 23           //     11 or 36 or 23
+#define TFT_SCLK 18           //     12 or 38 0r 18
+#define TFT_DC   15           //     14 or 35 or 15
+#define TFT_RST  -1           //     14 or 44 or -1 
+#define LOCK     32           //Lock - To lock the frequency
+#endif
 
 #if MC_TYPE == T7S3
 #define INTERRUPTED_PIN 15      // user defined connection to PCF8574 interrupt pin
