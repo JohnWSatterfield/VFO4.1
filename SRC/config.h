@@ -5,6 +5,7 @@
 #define CLINT      1          // Preference definition CLINT
 #define MARK       2          // Preference definition MARK
 #define JOHN       3          // Preference definition JOHN
+#define NO_ONE     4
 
 #define ETHERKIT   1          // SI5351 Etherkit Driver
 #define MCU        2          // SI5351 MCU Driver
@@ -29,7 +30,7 @@
 //----------From this point forward you must sed definitions to run properly
 //          The Preference section on Line 305-387 should allow you to run
 
-#define PREFERENCE MARK      //PREFERENCE can be defined as CLINT MARK JOHN
+#define PREFERENCE NO_ONE      //PREFERENCE can be defined as CLINT MARK JOHN NO_ONE
 
 #define BAND_TYPE DIGITAL     // BAND_TYPE is DIGITAL (PCF8574) or ANALOG (resistor matrix)
 
@@ -37,12 +38,12 @@
 
 //----------- The following are Feature Choices - Comment out if not using-------
 
-//#define CLOCK_OK              //comment out if no clock
+#define CLOCK_OK              //comment out if no clock
 //#define LOCK_OK               //comment out if no Lock
-//#define SHORT16_OK            //comment out if display normal length
-//#define MEM_OK                //comment out if not using memory features
+#define SHORT16_OK            //comment out if display normal length
+#define MEM_OK                //comment out if not using memory features
 //#define SS1PIN_OK             //DIGITAL but using SS1 Pin
-//#define VFO_OK                //comment out if not using VFO pin
+#define VFO_OK                //comment out if not using VFO pin
 
 //----------- The following are Micro controller choices
 #define WROVER 2  //Esp32 Wrover separate serial SPI display
@@ -68,7 +69,7 @@
  * 
  */
 
-#define MC_TYPE S3MINI
+#define MC_TYPE R8N16
 
 
 //-----------------From this point forward you do not need to set anything
@@ -96,18 +97,20 @@
 ----------------------------------------------------------*/
 
 #define CORRECTION      0ULL      //tuned on 20m at 14.250 - 8605000 typically 116 x freq = correction change
-#define CORRECTION_MCU    0       //tuned on 20m at 14.250 - 8605000 typically 2.881 x freq = correction change
+#define CORRECTION_MCU    929     //tuned on 20m at 14.250 - 8605000 typically 2.881 x freq = correction change
 #define CRYSTAL      25000000     // use 27000000 for QRP Labs (27MHz crystal) or 0 for generic module (25 MHz crystal)
 #define CRYSTAL_MCU  25000000     // use 27000000 for QRP Labs or 25000000 for generic module
 
 //Calculated how low the output frequency is / go above frequency tunes better
 //Radio    Etherkit   MCU
-//TK7490 - 40600ULL    504  5.52 MHz C.F. Atlas C.O.
+//TK7490 - 40600ULL    504  5.52 MHz C.F. Atlas C.O. 
 //Test3  -152500ULL   3124
 //Test4  - 74200ULL   1217  GUESS
 //Test5  - 74300ULL   1155/S2  1852/S3 
 //Test6  - 59660ULL    938
 //Test7  -157860ULL   3945
+//Test8  - 69200ULL   1127
+//Test9  - 62240ULL    929   
 //TM8736 - 69200ULL   1127  5.645 MHz C.F. Si5351 C.O.  T2 
 //TM???? -  3300ULL   -450         moved Test1 to this radio
 //TM???  - 60403ULL    964  GUESS  for radio with Drake Crystal Filter
@@ -152,12 +155,11 @@
  *    If "DISP_SIZE" is set to "LARGE_DISP", then we assume a 240x320 pixel display.
  *    If "DISP_SIZE" is set to "CUSTOM_DISP", the user can create a 'logical' (large)
  *    display size as I have below for my Atlas 210X
- *
  *  Many of the locations of things on the screen are conditionalized based on the
  *  screen size. The fonts used on the splash screen also vary with the screen size.
  */
 
-#define DISP_SIZE SMALL_DISP      // SMALL_DISP  CUSTOM_DISP  LARGE_DISP
+#define DISP_SIZE CUSTOM_DISP      // SMALL_DISP  CUSTOM_DISP  LARGE_DISP
 
 
 /*
@@ -249,7 +251,7 @@
 
   #define DISP_W         320     // Display width in landscape mode  260 280 300 320
   #define DISP_H         170     // Display height full height
-  #define DISP_L          16     // Dial Display offset from center Normally set from 0 set to 16 for short 16 pixels
+  #define DISP_L          12     // Dial Display offset from center Normally set from 0 set to 16 for short 16 pixels
   #define DISP_TM         30     // Top Margin moves Dial up and down
 	
   #define D_R            250     // Dial radius (if 45000, Linear scale)
@@ -407,7 +409,21 @@
 #undef  VFO_OK
 #endif
 
-
+#if PREFERENCE == NO_ONE
+#define   CL_BG         CL_BLACK      // Display background (Black)
+#define   CL_POINTER    CL_RED        // Dial pointer (Red)
+#define   CL_TICK_MAIN  CL_SKYBLUE    // Main Ticks (Lime green)
+#define   CL_NUM_MAIN   CL_BLUE       // Main dial numbers (White)
+#define   CL_TICK_SUB   CL_SKYBLUE    // Sub Ticks (Light blue)
+#define   CL_NUM_SUB    CL_YELLOW     // Sub Numbers (White)
+#define   CL_DIAL_BG    CL_BLACK      // Dial background (Black)
+#define   CL_SPLASH     CL_LT_BLUE    // Splash screen text
+#define   CL_FREQ_BOX   CL_YELLOW     // Numerical frequency box
+#define   CL_F_NUM      CL_CYAN       // Numerical frequency
+#define   CL_NUM        CL_YELLOW     // Numerical small numbers
+#define   CL_NUM_O      CL_YELLOW     // Step color in CUSTOM_DISP
+#define   CL_NUM_NORM   CL_YELLOW     // Normal Text inside box
+#endif
 
 
 

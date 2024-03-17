@@ -299,7 +299,7 @@ void setup() {
 
 //---------------------------------Set the correct time ------------------ 
       //uncomment next line to set clock year,month,date,hour,minute,second
-      //rtc.adjust(DateTime(2024, 9, 19, 18, 51, 20));  //(yr,mn,day,hr,min,sed)
+      //rtc.adjust(DateTime(2024, 3, 17, 1, 56, 20));  //(yr,mn,day,hr,min,sed)
       //immediatly after setting time put               // comment marks back, compile and reload program
 //------------------------------------------------------------------------
     DateTime now = rtc.now();         //read time from clock
@@ -337,7 +337,7 @@ void setup() {
     #endif
     #if P_STATUS == RUN               //if processor status is set to RUN
       #ifdef VFO_OK
-       VFOState = digitalRead(VFO);    //read the input of VFO  - comment out to test 
+        VFOState = digitalRead(VFO);  //read the input of VFO  - comment out to test 
       #endif
       setsiflag();                    //Internal / external VFO routine to turn VFO on or off 
     #endif
