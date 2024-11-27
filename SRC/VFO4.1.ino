@@ -102,12 +102,9 @@ ESP32
   ESP32Time rtc1(3600);       //ESP32 time type declaration
 #endif
 
-
-
 /*-----------------------------------------------------------------------------
  *       Global Variables
 -----------------------------------------------------------------------------*/
-
 //The following are the default memory frequencies for each band
 #if PREFERENCE == CLINT
 long freqa[5] = { 3853000, 3900000, 3916000, 3950000, 5000000};  //80M band memory presets
@@ -141,23 +138,23 @@ int sprite_height;              //height of sprites in display
 DIAL dial;                      //instance of DIAL for drawing the analog display
 
 /*-------------------------------------------------------
-   Frequency settings new dial program
+   Frequency settings for dial program
 --------------------------------------------------------*/
-uint8_t f_fchange =1;  // if frequency changed, set this flag to 1
-int32_t offset_frq = RFFREQ;   // Offset Frequency[Hz]
-int32_t car_frq = CWFREQ;      // Carrier Frequncy[Hz]
-int32_t Dial_frq = DFREQ;      // Dial frequency
-float L=0.0;                   // variable for dial length
+uint8_t f_fchange = 1;         // if frequency changed, set this flag to 1
+int32_t offset_frq = RFFREQ;   // Offset Frequency[Hz] RFFREQ
+int32_t car_frq = CWFREQ;      // Carrier Frequncy[Hz] CWFREQ
+int32_t Dial_frq = DFREQ;      // Dial frequency DFREQ
+float L =0.0;                   // variable for dial length
 
 /*----------------------------------------------------------------------------------
     Global flags
 -----------------------------------------------------------------------------------*/
-long frq = RFFREQ;       //Std Atlas C. Filter: 8605000 
+long frq = OPPFREQ;       //Std Atlas C. Filter: 8605000 
 long freq = DFREQ;       //Variable for holding frequency
 long dispFreq = DFREQ;   //Variable for displaying Frequency 
-long ifFreq = IF;        //Original CF 5520000, Newer CF 5645000, Drake CF 5643600
-long oppFreq = OPPFREQ;  //Original CF 5523300, Newer CF 5648300, Drake CF 5646400
-long cwFreq = CWFREQ;    //Original CF 5521200, Newer CF 5646200, Drake CF 5644800
+long ifFreq = IF;        //Original CF 5520000, Newer CF 5645000, Drake CF 5643600 IF
+long oppFreq = OPPFREQ;  //Original CF 5523300, Newer CF 5648300, Drake CF 5646400 OPPFREQ
+long cwFreq = CWFREQ;    //Original CF 5521200, Newer CF 5646200, Drake CF 5644800 CWFREQ
 long fstep = 1000;       //Variable for holding frequency steps
 long offSet = 0;         //Initial offset at 0
 unsigned long currentMillis = 0;  //variable for counting timer 0
@@ -216,69 +213,67 @@ void IRAM_ATTR serialprintcount();
 void setup() {
   char str[64];                  //String used by display
   bool i2c_found;                //flag to determine if i2c is working   
-  Serial.begin(BIT_RATE);          //initialize serial monitor communication rate
+  Serial.begin(BIT_RATE);       //initialize serial monitor communication rate
     
 //--------------------------Diagnostic routine for I2C connection --------
   #if P_STATUS == TESTING
     test_i2c();                  //run routine for testing the I2C connections
   #endif
+
 //-----------------Initialize the display -------------------------------
     LCD_setup();
     delay(100);
-
     print_Splash();
-    
     Dial_frq = freq;             // set dial to freq
 
 // -------------------Start serial and initialize pcf8574 & encoder
   #if BAND_TYPE == DIGITAL       // Compiler directive if PCF8574 is used
     delay(100);
     pinSetup();                  // Set the pcf8574 pins 
-    Serial.println("pinSetup");  //Diagnostics
+    Serial.println("pinSetup"); //Diagnostics
     delay(100);
   #endif
   
     setupencoder();              // Set up the encoder
     delay(100);
 
-
 //---------------------- Etherkit Set up the si5351---------------------
 #if SI5351_DRV == ETHERKIT    // Compiler directive for using ETHERKIT SI5351 drivers
     i2c_found = si5351.init(SI5351_CRYSTAL_LOAD_8PF, CRYSTAL, CORRECTION); //set up crystal frequency
     if (i2c_found) {                            //if I2C working properly
-      Serial.println("si5351 OK");              //diagnostics
+      Serial.println("si5351 OK");             //diagnostics
       on_off_flag=HIGH;                         //set on_off_flat HIGH and let encoder work
     } else {                                    //I2C not working communication with si5351 is off
-      Serial.println("si5351 not OK");          //diagnostics
-      Serial.println("on_off_flag is low");     //diagnostics
+      Serial.println("si5351 not OK");         //diagnostics
+      Serial.println("on_off_flag is low");    //diagnostics
       on_off_flag=LOW;                          //set on_off_flat HIGH and stop encoder from work
     }
-    si5351.drive_strength( SI5351_CLK0, SI5351_DRIVE_8MA ); //set up CLK0 for VFO
-    si5351.set_int(SI5351_CLK0,1);                          //initialize CLK0
-    si5351.output_enable(SI5351_CLK0, 1);                   //enable output of CLK0
-    set_frequency();                                        //set VFO strtup frequency
+    si5351.drive_strength( SI5351_CLK0, SI5351_DRIVE_8MA );   //set up CLK0 for VFO
+    si5351.set_int(SI5351_CLK0,1);                            //initialize CLK0
+    si5351.output_enable(SI5351_CLK0, 1);                     //enable output of CLK0
+    set_frequency();                                          //set VFO strtup frequency
     #if CO == SI5351_CO
-      si5351.drive_strength( SI5351_CLK1, SI5351_DRIVE_4MA ); //set up CLK1 for Carrier Oscillator C.O.
+      si5351.drive_strength( SI5351_CLK1, SI5351_DRIVE_6MA ); //set up CLK1 for Carrier Oscillator C.O.
       si5351.set_int(SI5351_CLK1,1);                          //initialize CLK1
       si5351.output_enable(SI5351_CLK1, 1);                   //enable output of CLK1
-      si5351.set_freq((ifFreq) * 100ULL, SI5351_CLK1);           // set frequency CLK1 to IF frequency Norm Position    
+      si5351.set_freq((ifFreq) * 100ULL, SI5351_CLK1);        // set frequency CLK1 to IF frequency Norm Position    
     #endif
-    delay(50);                                             //to give the si5351 chip time to initialize
+    delay(50);                                                //to give the si5351 chip time to initialize
 #endif
 
 //-----------------------Set up the MCU si5351 Driver ------------------
 #if SI5351_DRV == MCU
-    i2c_found = si5351.init(CRYSTAL_MCU);        // Initialize the crystal frequency
-    si5351.correction(CORRECTION_MCU);        // Set correction tuning high 150 Hz
+    si5351.init(CRYSTAL_MCU);                 // Initialize the crystal frequency
+    si5351.correction(CORRECTION_MCU);        // Set up crystal frequency
     si5351.setPower(0,SIOUT_8mA);             // Set output power of CLI0 Si5351
-    si5351.enable(0);                         // enable output of CLK0
     set_frequency();                          // Set initial frequency of Si5351 CLK0
+    si5351.enable(0);                         // enable output of CLK0
     #if CO == SI5351_CO
-      si5351.setPower(1,SIOUT_4mA);             // Set output power of CLK1 of Si5351
+      si5351.setPower(1,SIOUT_6mA);             // Set output power of CLK1 of Si5351
+      si5351.setFreq(ifFreq,1);                 // Set initial frequency of si5351 CLK1
       si5351.enable(1);                         // enable output of CLK1
-      si5351.setFreq(1,ifFreq);                 // Set initial frequency of si5351 CLK1
     #endif
-    si5351.reset();                           // Rreset PLL of Si5351
+    si5351.reset();                           // Reset PLL of Si5351
     i2c_found = si5351.isEnabled(0);          // See if si5351 is on
     if (i2c_found) {
       Serial.println("si5351 OK");            // Si5351 is operating
@@ -299,7 +294,7 @@ void setup() {
 
 //---------------------------------Set the correct time ------------------ 
       //uncomment next line to set clock year,month,date,hour,minute,second
-      //rtc.adjust(DateTime(2024, 3, 17, 1, 56, 20));  //(yr,mn,day,hr,min,sed)
+      //rtc.adjust(DateTime(2024, 9, 19, 18, 51, 20));  //(yr,mn,day,hr,min,sed)
       //immediatly after setting time put               // comment marks back, compile and reload program
 //------------------------------------------------------------------------
     DateTime now = rtc.now();         //read time from clock
@@ -309,17 +304,26 @@ void setup() {
   #endif
 
 //---------------------------------Initialize input pins------------------
-    //pinMode(TX1,INPUT);             //setup TX1 input not in use
-    pinMode(OPT,INPUT_PULLUP);        //setup OPT input pin 
+    //
+    #ifdef TX1
+      pinMode(TX1,INPUT);             //setup TX1 input not in use
+    #endif
+    #ifdef OPT
+      pinMode(OPT,INPUT_PULLUP);      //setup OPT input pin 
+    #endif
     pinMode(VFO,INPUT);               //setup VFO input pin (from EXT. OSC. 9 pin plug)
     pinMode(cw, INPUT);               //Setup cw input pin
     pinMode(STEP, INPUT_PULLUP);      //Setup switch STEP Encoder Step Rate
     #ifdef MEM_OK                     //Compiler directive if using memory features
      pinMode(MEM, INPUT_PULLUP);      //Setup switch MEM Memory Position
+     #ifdef SCAN
      pinMode(SCAN, INPUT_PULLUP);     //Setup switch SCAN
+     #endif
     #endif
     #ifdef LOCK_OK                    // Compiler directive if using frequency lock
+     #ifdef LOCK
       pinMode(LOCK,INPUT_PULLUP);     // Setup LOCK input pin 
+     #endif
     #endif
     #if BAND_TYPE == ANALOG           // Compiler directive if using analog resistor matrix for band control
       pinMode(SS1,INPUT_PULLUP);      // Setup SS1 input pin   
@@ -337,7 +341,7 @@ void setup() {
     #endif
     #if P_STATUS == RUN               //if processor status is set to RUN
       #ifdef VFO_OK
-        VFOState = digitalRead(VFO);  //read the input of VFO  - comment out to test 
+        VFOState = digitalRead(VFO);    //read the input of VFO from pin 4 - comment out to test 
       #endif
       setsiflag();                    //Internal / external VFO routine to turn VFO on or off 
     #endif
@@ -466,7 +470,7 @@ void loop() {
       previousMillis = currentMillis;               //restart timer value 
     }
   
-//----------------determine if external VFO is plugged in to radio-------------
+//---------------- determine if mode switch set to CW position -------------
   setcw();                                          //run setcw routine
 
 //-------------------------Additional Testing Diagnostics ---------------------
@@ -493,16 +497,22 @@ void loop() {
     if (!digitalRead(MEM)&&MEMlast) mem_change();  //check if MEM has been pressed next memory (A,B or C) 
     if (digitalRead(MEM)&&!MEMlast) {MEMlast = HIGH; delay(50);}  //reset the MEM to high state
   #endif   
+  #ifdef OPT
   if (!digitalRead(OPT)&&OPTlast) opt_change();    //check if OPT has been pressed
   if (digitalRead(OPT)&&!OPTlast) {OPTlast = HIGH; delay(50);}    //reset the OPT to high state
-  #ifdef MEM_OK                                    // Compiler directive if using memory functions
+  #endif
+  #ifdef MEM_OK                                   // Compiler directive if using memory functions
+  #ifdef SCAN
   if (!digitalRead(SCAN)&&SCANlast) {              //check if SCAN has been pressed
       memScanning = true;                          //set memScanning flag true
       SCANlast = LOW;                              //set SCANlast flag low
      }
   #endif
-  #ifdef LOCK_OK                                   //Compiler directive if using frequency lock function
+  #endif
+  #ifdef LOCK_OK 
+    #ifdef LOCK                                 //Compiler directive if using frequency lock function
      if (!digitalRead(LOCK))locked = LOW;else locked = HIGH; // Read LOCK, High is unlocked, low is locked
+    #endif
   #endif 
 
 //--------Code to handle Scan functions--------------------
@@ -528,7 +538,7 @@ void test_IO() {
     Serial.print("IF Offset: "); Serial.println(offSet);        //IF offset frequency
     Serial.print("Norm: "); Serial.println(slideSwitch);        //state of Norm/OPP 0/1 0=Norm 1=OPP
     Serial.print("VFO on_off: "); Serial.println(on_off_flag);  //state of on_off_flag to see if si5351 is 1=on or 0=off
-    Serial.println(IF);                                         //IF frequency
+    Serial.println(ifFreq);                                         //IF frequency
     Serial.print("CF: "); Serial.println(CF);                   //State of CF compiler directory 1-OLDER, 2=NEWER, 3=DRAKE
     Serial.print("CO Si=0: "); Serial.println(VFOsState);       //VFOsState flag 1=Atlas C.O. 0= si5351 C.O.
     Serial.print("Sprite Height"); Serial.println(sprite_height);//height of a sprite
@@ -559,7 +569,8 @@ for (byte i = 3; i < 120; i++)
 }
 
 void Scanning() {                                 // Code for doing scanning functions
-  while (scanning) {                              //Scanning frequency 1KHz per 2 seconds
+  #ifdef SCAN
+    while (scanning) {                              //Scanning frequency 1KHz per 2 seconds
        currentMillis1 = millis();                 //resetting timer 1
        if (currentMillis1 - previousMillis1 >= delaytime1) { //look for difference since last update
         scan();                                   //call scan subroutine 
@@ -574,12 +585,14 @@ void Scanning() {                                 // Code for doing scanning fun
          //Serial.println("all false exit");      //diagnostics
          } //end of if
          delay(100);                              //Debouncing delay
-     } //end of while 
-     if (digitalRead(SCAN)&&!SCANlast) {SCANlast = HIGH; delay(20);} //reset the button6 to high state   
+    } //end of while 
+    if (digitalRead(SCAN)&&!SCANlast) {SCANlast = HIGH; delay(20);} //reset the button6 to high state   
+  #endif
 }
 
 void MemScanning() {                              // Code for doing mem scanning functions
-  while (memScanning) {                           // start 5 seconds between frequency while scanning 
+  #ifdef SCAN
+    while (memScanning) {                           // start 5 seconds between frequency while scanning 
       currentMillis1 = millis();                  //start currentMillis counter value
       if (currentMillis1 - previousMillis1 >= delaytime2) { //look for difference since last update
         mem_change();                             //memory change routine also updates display
@@ -597,6 +610,7 @@ void MemScanning() {                              // Code for doing mem scanning
       delay(100);                                 //Debouncing delay
     } //end of while
     if (digitalRead(SCAN)&&!SCANlast) {SCANlast = HIGH; delay(20);} //reset the button6 to high state
+  #endif
 }
 
 void band_Change_Analog() {                       // Code to change bands using resistor matrix
@@ -669,13 +683,17 @@ void band_Change_PCF8574() {                      // Code to change bands using 
       band_change();                              //make a band change
       HoldBand = OldBand;                         //reset the band change detection variable
      }//-----------------Code to bypass LP Filter if needed--------------------------
-     /*txflag=digitalRead(TX1);                    //code for bypassing LP Filter when transmitting not in use
+     #ifdef TX1
+     txflag=digitalRead(TX1);                    //code for bypassing LP Filter when transmitting not in use
       if (txflag) {                               //if in transmit mode
       pcf8574.digitalWrite(5,LOW);                //Write output for LP Filter multiplexer
-      pcf8574.digitalWrite(6,LOW);                //Write output for LP Filter multiplexer
-     */
+      pcf8574.digitalWrite(6,LOW); 
+      }
+      //Write output for LP Filter multiplexer
+     #endif
    #endif
 } //end band change
+
 
 void set_Slide_Switch() {                         //slide switch change code
   if (cwpos == LOW)   {                           // if mode switch in not in CW Position
@@ -700,7 +718,10 @@ void set_Slide_Switch() {                         //slide switch change code
         if (!VFOsState) si5351.set_freq((ifFreq) * 100ULL, SI5351_CLK1);  // set CLK1 to the IF frequency Norm Position
        #endif
        #if SI5351_DRV == MCU
-        if (!VFOsState) si5351.setFreq(1,ifFreq);
+        if (!VFOsState) {
+          si5351.setFreq(1,ifFreq);
+          si5351.enable(1);                         // enable output of CLK1
+        }
        #endif
       #endif
       f_dchange = 1;                              // flag to display screen upon exit
@@ -716,10 +737,13 @@ void set_Slide_Switch() {                         //slide switch change code
         if (!VFOsState) si5351.set_freq((oppFreq) * 100ULL, SI5351_CLK1); // set up CLK1 to the IF frequency opp Position
        #endif
        #if SI5351_DRV == MCU                     // Compiler directive for using MCU SI5351 drivers
-        if (!VFOsState) si5351.setFreq(1,oppFreq); // Set up CLK1 to the IF frequency opp Position
+        if (!VFOsState) {
+          si5351.setFreq(1,oppFreq); // Set up CLK1 to the IF frequency opp Position
+          si5351.enable(1);                         // enable output of CLK1
+       }      
        #endif 
       #endif       
-      offSet = OFFSET;                          // set offSet variable to OFFSET
+      offSet = OFFSET;                          // set value of offSet to defined OFFSET
       bandlist();                               // display the correct band frequency & offset of each band
       f_dchange = 1;                            // flag to display screen upon exit
       slideSwitchLast = slideSwitch;            // set slideSwitchLast to Low for one pass through if statement
@@ -730,15 +754,19 @@ void set_Slide_Switch() {                         //slide switch change code
   }  //end if cwpos = low
 }
 
+//--------------------------- Code to detect CW mode -----------------------
 void setcw() {                                     // Code for detecting if transmitter in CW mode
   cwpos = digitalRead(cw);                         // check if mode switch is in CW Position
   if ((cwpos) && (cwposLast)) {                    // if mode switch in on cw first time around
    #if CO == SI5351_CO                              // If using Atlas CLK1 for carrier oscillator
     #if SI5351_DRV == ETHERKIT                     // Compiler directive for using ETHERKIT SI5351 drivers
-      if (VFOsState) si5351.set_freq((cwFreq) * 100ULL, SI5351_CLK1);   // set CLK1 to the cwFreq Norm Position
+      if (!VFOsState) si5351.set_freq((cwFreq) * 100ULL, SI5351_CLK1);   // set CLK1 to the cwFreq Norm Position
     #endif
     #if SI5351_DRV == MCU                          // Compiler directive for using MCU SI5351 drivers
-      if (VFOsState) si5351.setFreq(1,cwFreq);     // Set CLK1 to the cwFreq Norm Position
+      if (!VFOsState) {
+        si5351.setFreq(1,cwFreq);     // Set CLK1 to the cwFreq Norm Position
+        si5351.enable(1);                         // enable output of CLK1
+      }
     #endif
    #endif
    offSet = CWOFFSET;                              // set value of offSet to defined CWOFFSET
@@ -747,7 +775,7 @@ void setcw() {                                     // Code for detecting if tran
    cwposLast = LOW;                                // set cwposLast to High for a single pass through if statement
    Serial.println("mode switch in CW");            //diagnostics
    slideSwitchLast = !slideSwitchLast;             //reset slide switch flag
-  } //end if cwpos= high
+  } else if (cwpos == LOW) cwposLast = HIGH;
 } //end setcw
 
 //----------------------------code to handle frequency step -------------------
@@ -790,11 +818,12 @@ void scan() {                                //procedure to scan frequency
     update_Display();                        //write changes to screen
 }
 
+//----------------------------code to handle Screen (Display) update -----------
 void update_Display() {
     if (on_off_flag == HIGH) set_frequency();//send frequency to si5351
     Dial_frq = freq;                         //send frequency to dial 
     display_write();                        //write the band change to the display
-    delay(5);           
+    //delay(5);           
 }
 
   
@@ -881,19 +910,86 @@ void freqrecall() {                           //code for recalling the saved fre
 //----------------------------code to handle band changes ---------------------
 void bandlist() {                //function for displaying the correct band frequency & offset of each band
   long interfreq = 0;
-  if (count == 1){ interfreq =  IF + offSet;  dispFreq = freq - 0;}    //count = 1 (80m) on the display screen
-  if (count == 2){ interfreq =  IF + offSet;  dispFreq = freq - 0;}    //count = 2 (40M) IF frequency for LSB (7274.97 subtract additional 30)
-  if (count == 3){ interfreq = -IF - offSet;  dispFreq = freq + 0;}    //count = 3 (20m) IF Frequency for USB starting with 20m (8605000)
-  if (count == 4){ interfreq = -IF - offSet;  dispFreq = freq + 0;}    //count = 4 (15) on the display screen
-  if (count == 5){ interfreq = -IF - offSet;  dispFreq = freq + 0;}    //count = 5 (10m) on the display screen
+  if (count == 1){ interfreq =  ifFreq + offSet;  dispFreq = freq - 0;}    //count = 1 (80m) on the display screen
+  if (count == 2){ interfreq =  ifFreq + offSet;  dispFreq = freq - 0;}    //count = 2 (40M) IF frequency for LSB (7274.97 subtract additional 30)
+  if (count == 3){ interfreq = -ifFreq - offSet;  dispFreq = freq + 0;}    //count = 3 (20m) IF Frequency for USB starting with 20m (8605000)
+  if (count == 4){ interfreq = -ifFreq - offSet;  dispFreq = freq + 0;}    //count = 4 (15) on the display screen
+  if (count == 5){ interfreq = -ifFreq - offSet;  dispFreq = freq + 0;}    //count = 5 (10m) on the display screen
   frq = freq + interfreq;  //in this case for 20m or 14250000 - IF to calibrate radio (8605000)
   //if (freq == 14275000) frq = freq + interfreq -10;  //shift frequency around birdies
   //if (freq == 14326000) frq = freq + interfreq + 60; //shift frequency around birdies
   //TM8736 - Serial number of radio with birdies
 }
-  
-//----------------------------code to handle band display 2--------------------
 
+//----------------------------code to handle LP Filters used ------------------
+void set_mux() {                  //Routine for setting MUX switches for LP Filter by band number
+#if BAND_TYPE == DIGITAL          // Compiler directive using PCF8574 for band change
+  switch(count) {                 //Switch for LP Filter by band number
+    case 1: {pcf8574.digitalWrite(5,LOW); pcf8574.digitalWrite(6,LOW); break;} //80m
+    case 2: {pcf8574.digitalWrite(5,HIGH); pcf8574.digitalWrite(6,LOW); break;}//40m
+    case 3: {pcf8574.digitalWrite(5,LOW); pcf8574.digitalWrite(6,LOW); break;} //20m
+    case 4: {pcf8574.digitalWrite(5,HIGH); pcf8574.digitalWrite(6,LOW); break;}//15m
+    case 5: {pcf8574.digitalWrite(5,LOW); pcf8574.digitalWrite(6,HIGH); break;}//10m
+  }
+#endif
+}
+  
+//------------------------code to set output frequency of si5351  -------------
+void set_frequency() {                      //procedure for setting output frequency
+  bandlist();                               //determine correct frequency to display 
+  #if SI5351_DRV == ETHERKIT    // Compiler directive for using ETHERKIT SI5351 drivers
+    if (on_off_flag) si5351.set_freq((frq) * 100ULL, SI5351_CLK0);    //output frequency for CLK0
+  #endif
+  #if SI5351_DRV == MCU                     // Compiler directive for using MCU SI5351 drivers
+    if (on_off_flag) si5351.setFreq(0,frq);  // Output frequency for CLK0
+  #endif
+}
+
+//---------------------- code to handle External/Internal VFO -----------------
+void setsiflag() {                            //External/internal VFO input routine
+      bool i2c_found;                         //variable for determining if si5351 is on & communicating
+      if ((!VFOState)&&(on_off_flag)) {       //if External VFO is in EXT OSC. pin
+        Serial.println("si5351 is off");      //diagnostics
+        on_off_flag = LOW;                    //Set Internal VFO flag off
+        VFOStateLast = VFOState;              //flag for 1 time through the routine
+        #if SI5351_DRV == ETHERKIT
+          si5351.output_enable( SI5351_CLK0, 0);//Turn VFO CLK0 off
+        #endif
+        #if SI5351_DRV == MCU                 // Compiler directive for using MCU SI5351 drivers
+          si5351.disable(0);                  //Turn VFO CLK0 off  
+        #endif
+        update_Display();                     //Update display now
+      } else {                                //if Internal VFO is being used
+        if((VFOState)&& (!VFOStateLast)) {    //check plug in ext socket and VFO wires jumpered to on
+        #if SI5351_DRV == ETHERKIT
+          si5351.output_enable( SI5351_CLK0, 1);//Restart the si5351
+        #endif
+        #if SI5351_DRV == MCU                // Compiler directive for using MCU SI5351 drivers
+          si5351.enable(0);                  //Turn VFO CLK0 on
+        #endif
+        delay(200);                           //to give the si5351 chip time to initialize
+        Serial.println("si5351 OK");          //diagnostics
+        VFOStateLast = VFOState;              //reset VFO flag
+        bandpresets();                        //first time setup after start up si5351
+        Serial.println("resetting si5351");   //diagnostics
+        on_off_flag = HIGH;                   //set si5351 flag high
+        update_Display();
+      }
+  }
+}
+
+//------------ code to handle band presets during startup Only ----------
+void bandpresets() {       /*procedure for first time setup after start up of si5351 */
+  bandlist();              //Determine and set the proper band 
+  set_mux();               //set multiplexer to correct band 
+  set_frequency();         //Send freq to si5351
+  delay(5);                //time for si5351 to process frequency
+  stp = 1;                 //set frequency step
+  setstep1();              //set frequency step to default
+}
+ 
+//-----------Rest of code to handle display------------------------------------
+//----------------------------code to handle band display 2--------------------
 void display_Band() {                         //code to display the current selected band
   switch(count) {                             //determine which position the band switch is located
     case 1: sprintf(band_str, " 80 M"); break; //set to 80M position USB
@@ -916,10 +1012,10 @@ void display_Band() {                         //code to display the current sele
   #endif
   #if DISP_SIZE == CUSTOM_DISP          // if custom display
     #ifndef SHORT16_OK                  // Compiler directive if full screen
-     sprites[flip].setCursor(8, T1_POS );  // place cursor here
+     sprites[flip].setCursor(10, T1_POS );  // place cursor here
     #endif
     #ifdef SHORT16_OK                   // Compiler directive reduce screen by 16 pixels
-     sprites[flip].setCursor(24, T1_POS );  // place cursor here
+     sprites[flip].setCursor(10+DISP_L/2, T1_POS );  // place cursor here
     #endif
     sprites[flip].print(band_str);      // send to sprite memory
   #endif
@@ -993,6 +1089,9 @@ void display_Step() {                    //code to handle large & custom display
       #ifdef CLOCK_OK                   // if using clock functions
        sprites[flip].setCursor(90, T1_POS );// place cursor here
       #endif
+    #endif
+    #ifndef MEM_OK                   // if using clock functions
+       sprites[flip].setCursor(140, T1_POS );// place cursor here
     #endif
     #ifndef CLOCK_OK || #ifndef MEM_OK  // Compiler directive if not using clock or not using memory functions
       sprites[flip].setCursor(140, T1_POS );// Place cursor here
@@ -1099,11 +1198,12 @@ void display_Mem() {                  //code to display the current memory A, B,
     #endif
   #endif
   #if DISP_SIZE == CUSTOM_DISP         // If custom display
+    
     #ifndef SHORT16_OK                 // Compiler directive if display full size
-     sprites[flip].setCursor(254, T1_POS );// Place cursor      
-      #if PREFERENCE == CLINT
-        sprites[flip].setCursor(248, T1_POS );// Place cursor
-      #endif
+     sprites[flip].setCursor(254, T1_POS );// Place cursor
+    #endif
+    #if PREFERENCE == CLINT
+      sprites[flip].setCursor(248, T1_POS );// Place cursor
     #endif
     #ifdef SHORT16_OK                  // Compiler directive if display 16 pixels smaller
      sprites[flip].setCursor(254, T1_POS );// Place cursor here
@@ -1115,7 +1215,7 @@ void display_Mem() {                  //code to display the current memory A, B,
 //----------------------------code to handle frequency Display 2 --------------
 void display_Freq() {            // Code to display digital frequency 
       char str[12], strl[24];    // strings to manipulate appearance of the digital frequency 
-      sprintf(str, "%3d.%03d %03d",Dial_frq/1000000, (Dial_frq%1000000)/1000,(Dial_frq%1000) );
+      sprintf(str, "%3d.%03d.%03d",Dial_frq/1000000, (Dial_frq%1000000)/1000, (Dial_frq%1000) );
         // sprintf converts numbers into strings
       int cc=0;                  // integer for manipulating the string
       if(str[0]=='0') {          // gets rid of leading 0
@@ -1169,7 +1269,7 @@ void display_Freq() {            // Code to display digital frequency
   #endif
   #if DISP_SIZE == CUSTOM_DISP               //Compiler directive 170x320
       #ifdef SHORT16_OK                     // Compiler directive if display full size
-       sprites[flip].drawRoundRect(24,F1_POS,295,40,5,CL_FREQ_BOX); // draw box (x1,y1,x2,y2,thick,color) (0,15,320,40,5,)
+       sprites[flip].drawRoundRect(DISP_L,F1_POS,320-DISP_L,40,5,CL_FREQ_BOX); // draw box (x1,y1,x2,y2,thick,color) (0,15,320,40,5,)
       #else                      // Compiler directive if display 16 pixels smaller
        #if PREFERENCE == CLINT
          sprites[flip].drawRoundRect(5,F1_POS,305,40,15,CL_FREQ_BOX); // draw box (x1,y1,x2,y2,thick,color) (0,15,320,40,15,)
@@ -1185,17 +1285,20 @@ void display_Freq() {            // Code to display digital frequency
        sprites[flip].setCursor(44,F1_POS+5);       // put cursor to position x,y
       #endif
       #ifdef SHORT16_OK                      // Compiler directive if display 16 pixels smaller
-      sprites[flip].setCursor(62,F1_POS+5);        // put cursor to position x,y
+      sprites[flip].setCursor(DISP_L+44,F1_POS+5);        // put cursor to position x,y
       #endif
       sprites[flip].print(strl);             // print string strl
       sprites[flip].setFont(&fonts::Font4);  // set font type and size to Font4
       sprites[flip].setTextSize(1.0f);       // text size 1.0
       sprites[flip].setTextColor(CL_F_NUM);  // text color set in config
       #ifndef SHORT16_OK                     // Compiler directive if display full size
-        sprites[flip].setCursor(248,F1_POS+15);     // put cursor to position x,y
+        sprites[flip].setCursor(254,F1_POS+15);// put cursor to position x,y
+      #endif
+      #if PREFERENCE == CLINT
+        sprites[flip].setCursor(248,F1_POS+15);// put cursor to position x,y
       #endif
       #ifdef SHORT16_OK                      // Compiler directive if display 16 pixels smaller
-       sprites[flip].setCursor(264,F1_POS+15);      // put cursor to position x,y
+       sprites[flip].setCursor(DISP_L+254,F1_POS+15);      // put cursor to position x,y
       #endif
       if (on_off_flag) sprites[flip].print("MHz"); else sprites[flip].print("Off"); // print text MHz
       sprites[flip].setFont(&fonts::Font4);  // Set font size
@@ -1205,81 +1308,15 @@ void display_Freq() {            // Code to display digital frequency
        sprites[flip].setCursor(10,F1_POS+13);        // put cursor to position x,y
       #endif
       #ifdef SHORT16_OK                      // Compiler directive if display 16 pixels smaller
-       sprites[flip].setCursor(29,F1_POS+13);       // put cursor to position x,y
+       sprites[flip].setCursor(DISP_L+6,F1_POS+13);       // put cursor to position x,y
       #endif
       if (offSet == CWOFFSET) sprites[flip].print("CW"); // if in CW mode, display CW
-      else 
+        else
       if (slideSwitch) sprites[flip].print("OPP"); else sprites[flip].print("Norm"); // print text OPP/NOR
   #endif
   
 }
   
-//----------------------------code to handle LP Filters used ------------------
-void set_mux() {                  //Routine for setting MUX switches for LP Filter by band number
-#if BAND_TYPE == DIGITAL          // Compiler directive using PCF8574 for band change
-  switch(count) {                 //Switch for LP Filter by band number
-    case 1: {pcf8574.digitalWrite(5,LOW); pcf8574.digitalWrite(6,LOW); break;} //80m
-    case 2: {pcf8574.digitalWrite(5,HIGH); pcf8574.digitalWrite(6,LOW); break;}//40m
-    case 3: {pcf8574.digitalWrite(5,LOW); pcf8574.digitalWrite(6,LOW); break;} //20m
-    case 4: {pcf8574.digitalWrite(5,HIGH); pcf8574.digitalWrite(6,LOW); break;}//15m
-    case 5: {pcf8574.digitalWrite(5,LOW); pcf8574.digitalWrite(6,HIGH); break;}//10m
-  }
-#endif
-}
-  
-//------------------------code to set output frequency of si5351  -------------
-void set_frequency() {                      //procedure for setting output frequency
-  bandlist();                               //determine correct frequency to display 
-  #if SI5351_DRV == ETHERKIT    // Compiler directive for using ETHERKIT SI5351 drivers
-    if (on_off_flag) si5351.set_freq((frq) * 100ULL, SI5351_CLK0);    //output frequency for CLK0
-  #endif
-  #if SI5351_DRV == MCU                     // Compiler directive for using MCU SI5351 drivers
-    if (on_off_flag) si5351.setFreq(0,frq);  // Output frequency for CLK0
-  #endif
-}
-
-//---------------------- code to handle External/Internal VFO -----------------
-void setsiflag() {                            //External/internal VFO input routine
-      bool i2c_found;                         //variable for determining if si5351 is on & communicating
-      if ((!VFOState)&&(on_off_flag)) {       //if External VFO is in EXT OSC. pin
-        Serial.println("si5351 is off");      //diagnostics
-        on_off_flag = LOW;                    //Set Internal VFO flag off
-        VFOStateLast = VFOState;              //flag for 1 time through the routine
-        #if SI5351_DRV == ETHERKIT
-          si5351.output_enable( SI5351_CLK0, 0);//Turn VFO CLK0 off
-        #endif
-        #if SI5351_DRV == MCU                 // Compiler directive for using MCU SI5351 drivers
-          si5351.disable(0);                  //Turn VFO CLK0 off  
-        #endif
-        update_Display();                     //Update display now
-      } else {                                //if Internal VFO is being used
-        if((VFOState)&& (!VFOStateLast)) {    //check plug in ext socket and VFO wires jumpered to on
-        #if SI5351_DRV == ETHERKIT
-          si5351.output_enable( SI5351_CLK0, 1);//Restart the si5351
-        #endif
-        #if SI5351_DRV == MCU                // Compiler directive for using MCU SI5351 drivers
-          si5351.enable(0);                  //Turn VFO CLK0 on
-        #endif
-        delay(200);                           //to give the si5351 chip time to initialize
-        Serial.println("si5351 OK");          //diagnostics
-        VFOStateLast = VFOState;              //reset VFO flag
-        bandpresets();                        //first time setup after start up si5351
-        Serial.println("resetting si5351");   //diagnostics
-        on_off_flag = HIGH;                   //set si5351 flag high
-        update_Display();
-      }
-  }
-}
-
-//------------ code to handle band presets during startup Only ----------
-void bandpresets() {       /*procedure for first time setup after start up of si5351 */
-  bandlist();              //Determine and set the proper band 
-  set_mux();               //set multiplexer to correct band 
-  set_frequency();         //Send freq to si5351
-  delay(5);                //time for si5351 to process frequency
-  stp = 1;                 //set frequency step
-  setstep1();              //set frequency step to default
-}
 
 //------------- Clear display and write Small Display ----------------
 
@@ -1309,4 +1346,4 @@ void display_write() {                           // procedure to write to the sc
    #endif
    sprites[flip].pushSprite(&lcd, 0, sprite_height); // Send 2nd half of dial to screen
    flip = !flip;                                 // clear sprite flag
-} // End of Display proces0s
+} // End of Display process

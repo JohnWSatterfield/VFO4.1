@@ -94,8 +94,8 @@
 #define TFT_BLACK2  0x0020  //opaque black
 
 // Micro Controller SPI Configuration -------------------------
-#if MC_TYPE == S3MINI || MC_TYPE == S2MINI || MC_TYPE == S3ZERO
-  #define SPIHOST SPI3_HOST  // SPI2_HOST or SPI3_HOST 
+#if MC_TYPE == S3MINI || MC_TYPE == S2MINI || MC_TYPE == S3ZERO || MC_TYPE == C3FH4 || MC_TYPE == C3MINI
+  #define SPIHOST SPI2_HOST  // SPI2_HOST or SPI3_HOST 
 #else if MC_TYPE == WROVER
   #define SPIHOST HSPI_HOST // VSPI_HOST or HSPI_HOST
 #endif

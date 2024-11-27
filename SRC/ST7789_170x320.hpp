@@ -101,11 +101,11 @@
 //#define DialBGCol   CL_DIAL_BG
 #define TFT_BLACK2  0x0020  //opaque black
 
-#if MC_TYPE == S3MINI || MC_TYPE == S2MINI || MC_TYPE == S3ZERO || MC_TYPE == R8N16 || MC_TYPE == S3R8 || MC_TYPE == C3ZERO || MC_TYPE == RP2040
+#if MC_TYPE == S3MINI || MC_TYPE == S2MINI || MC_TYPE == S3ZERO || MC_TYPE == R8N16 || MC_TYPE == S3R8 || MC_TYPE == C3ZERO || MC_TYPE == RP2040 || MC_TYPE == C3FH4 || MC_TYPE == C3MINI
   #define SPIHOST SPI2_HOST  // SPI2_HOST or SPI3_HOST 
 #endif
 #if MC_TYPE == WROVER || MC_TYPE == D1MINI
-  #define SPIHOST SPI3_HOST // VSPI_HOST or HSPI_HOST
+  #define SPIHOST HSPI_HOST // VSPI_HOST or HSPI_HOST
 #endif
 
 //#define LGFX_ESP32_S2
@@ -126,6 +126,8 @@ class LGFX : public lgfx::LGFX_Device
   lgfx::Bus_Parallel8 _bus_instance;
   lgfx::Light_PWM     _light_instance;
   #endif
+  
+  
 public:
   LGFX(void)
   {
