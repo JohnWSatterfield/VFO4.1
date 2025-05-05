@@ -30,7 +30,7 @@
 //----------From this point forward you must sed definitions to run properly
 //          The Preference section on Line 305-387 should allow you to run
 
-#define PREFERENCE JOHN      //PREFERENCE can be defined as CLINT MARK JOHN 
+#define PREFERENCE CLINT      //PREFERENCE can be defined as CLINT MARK JOHN 
 
 #define BAND_TYPE ANALOG     // BAND_TYPE is DIGITAL (PCF8574) or ANALOG (resistor matrix)
 
@@ -38,9 +38,9 @@
 
 //----------- The following are Feature Choices - Comment out if not using-------
 
-#define CLOCK_OK              //comment out if no clock
+//#define CLOCK_OK              //comment out if no clock
 #define LOCK_OK               //comment out if no Lock
-#define SHORT16_OK            //comment out if display normal length
+//#define SHORT16_OK            //comment out if display normal length
 #define MEM_OK                //comment out if not using memory features
 //#define SS1PIN_OK             //DIGITAL but using SS1 Pin
 #define VFO_OK                //comment out if not using VFO pin
@@ -72,9 +72,10 @@
  * if MC_TYPE is set to D1MINI then the Microcntroller is a ESP32-D1 Mini pro 
  * if MC_TYPE is set to C3FH4 then the Microcntroller is a ESP32-C3FH4 or a ESP32-C3-Zero
  * if MC_TYPE is set to C3MINI then the Microcntroller is a ESP32-C3-Super Mini
+ * if MC_TYPE is set to S3V19 then the Microcontroller is an ESP32-S3-Mini Lolin for PC Board Ver 1.9
  */
 
-#define MC_TYPE S3V19
+#define MC_TYPE WROVER
 
 //-----------------From this point forward you do not need to set anything
 //                 I suggest you use the Preference section on Line 305-387 
@@ -101,7 +102,7 @@
 ----------------------------------------------------------*/
 
 #define CORRECTION      0ULL       //tuned on 20m at 14.250 - 8605000 typically 116 x freq = correction change
-#define CORRECTION_MCU    3466        //tuned on 20m at 14.250 - 8605000 typically 2.881 x freq = correction change
+#define CORRECTION_MCU    0        //tuned on 20m at 14.250 - 8605000 typically 2.881 x freq = correction change
 #define CRYSTAL       25000000     // use 27000000 for QRP Labs (27MHz crystal) or 0 for generic module (25 MHz crystal)
 #define CRYSTAL_MCU   25000000     // use 27000000 for QRP Labs or 25000000 for generic module
 
@@ -475,13 +476,13 @@
   #define   TX1    11      // TX1 used to bypass LPF not in use
   #define   CLOCK  21      // CLOCK use BCD2 Pin
 #endif
-  #define   cw     35      // mode slector in cw position (34)
+  #define   cw     34      // mode slector in cw position (34) was (35)
   #define   DT     10      // DT pin, connected to ESP32 pin B 
   #define   CLK     8      // CLK pin, connected to ESP32 pin A 
   #define   MEM    13      // memory
   #define   STEP    6      // step 
   #define   SCAN    7      // scan
-  #define   TSDA   44      // I2C SDA (33) Was RX (44)
+  #define   TSDA   33      // I2C SDA (33) Was RX (44)
   #define   TSCL   43      // I2C SCL (TX)
   #define   LOCK    5      // LOCK to lock the frequency  
   #define   VFO    17      // Turn internal VFO on_off uses uses jumper on 9 pin plug

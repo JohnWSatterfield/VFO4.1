@@ -114,7 +114,6 @@ long freqd[5] = {21285000,21300000,21320000,21350000,15000000};  //15M band memo
 long freqe[5] = {28385000,28425000,28450000,28500000,28900000};  //10M band memory presets
 int recall[5] = {2,1,3,2,2};                                     //prefered memory recall at startup
 #else
-
 long freqa[5] = { 3846000, 3916000, 3987500, 3950000, 5000000};  //80m band memory presets
 long freqb[5] = { 7185000, 7235000, 7275000, 7279000, 10000000};  //40m band memory presets
 long freqc[5] = {14235000,14250000,14300000, 14332000, 15000000};  //20m band memory presets
@@ -214,7 +213,8 @@ void setup() {
   char str[64];                  //String used by display
   bool i2c_found;                //flag to determine if i2c is working   
   Serial.begin(BIT_RATE);       //initialize serial monitor communication rate
-    
+  Wire.setPins(TSDA,TSCL);
+  Wire.begin();
 //--------------------------Diagnostic routine for I2C connection --------
   #if P_STATUS == TESTING
     test_i2c();                  //run routine for testing the I2C connections
