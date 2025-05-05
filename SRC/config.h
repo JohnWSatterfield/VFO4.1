@@ -30,7 +30,7 @@
 //----------From this point forward you must sed definitions to run properly
 //          The Preference section on Line 305-387 should allow you to run
 
-#define PREFERENCE CLINT      //PREFERENCE can be defined as CLINT MARK JOHN 
+#define PREFERENCE JOHN      //PREFERENCE can be defined as CLINT MARK JOHN 
 
 #define BAND_TYPE ANALOG     // BAND_TYPE is DIGITAL (PCF8574) or ANALOG (resistor matrix)
 
@@ -38,7 +38,7 @@
 
 //----------- The following are Feature Choices - Comment out if not using-------
 
-//#define CLOCK_OK              //comment out if no clock
+#define CLOCK_OK              //comment out if no clock
 #define LOCK_OK               //comment out if no Lock
 #define SHORT16_OK            //comment out if display normal length
 #define MEM_OK                //comment out if not using memory features
@@ -57,10 +57,10 @@
 #define D1MINI 10 //ESP32-D1-Mini
 #define C3FH4  11 //WeAct Studio ESP32-C3FH4 or ESP32-C3-Zero
 #define C3MINI 12 //ESP32-C3-Super Mini 16 pin version
-#define S3TEST 13
+#define S3V19  13 //Pin layout for S3 Mini Used in PC Board Version 1.9
 
 /*
- * There are 5 choices for the MC Microcontroller type
+ * There are 11 choices for the MC Microcontroller type
  * if MC_TYPE is set to WROVER then the Microcontroller is an ESP32-Wrover LilyGo T7 Ver 1.5
  * if MC_TYPE is set to S3ZERO then the Microcontroller is an ESP32-S3-Zero WaveShare
  * if MC_TYPE is set to S3R8 then the Microcontroller is an ESP32-S3R8 LilyGo W/Integrated Display
@@ -74,7 +74,7 @@
  * if MC_TYPE is set to C3MINI then the Microcntroller is a ESP32-C3-Super Mini
  */
 
-#define MC_TYPE WROVER
+#define MC_TYPE S3V19
 
 //-----------------From this point forward you do not need to set anything
 //                 I suggest you use the Preference section on Line 305-387 
@@ -83,7 +83,7 @@
  *    Define the EncoderStep here
  */
  
-#define EncoderStep  48   //  Encoder pulses needed to advance the encoder 1 step
+#define EncoderStep  24   //  Encoder pulses needed to advance the encoder 1 step
 #define BANDDIV  820      //  DIV routine for analog resistor matrix normally set to 712
 
 /*--------------------------------------------------------
@@ -101,7 +101,7 @@
 ----------------------------------------------------------*/
 
 #define CORRECTION      0ULL       //tuned on 20m at 14.250 - 8605000 typically 116 x freq = correction change
-#define CORRECTION_MCU    0        //tuned on 20m at 14.250 - 8605000 typically 2.881 x freq = correction change
+#define CORRECTION_MCU    3466        //tuned on 20m at 14.250 - 8605000 typically 2.881 x freq = correction change
 #define CRYSTAL       25000000     // use 27000000 for QRP Labs (27MHz crystal) or 0 for generic module (25 MHz crystal)
 #define CRYSTAL_MCU   25000000     // use 27000000 for QRP Labs or 25000000 for generic module
 
@@ -119,7 +119,7 @@
 //TM???? -  3300ULL   -450         moved Test1 to this radio
 //Feel free to add your serial number and calibration constant here
 
-#define CF OLDER                  //OLDER for 5520 CO, NEWER for 5645 CO and DRAKE for Drake CF 
+#define CF NEWER                  //OLDER for 5520 CO, NEWER for 5645 CO and DRAKE for Drake CF 
 
 /*-------------------------------------------------------
    Frequency settings
@@ -200,7 +200,7 @@
  * IF "STATUS" is set to RUN then the radio will operate normally
  */
 
-#define P_STATUS TESTING              // TESTING   RUN
+#define P_STATUS RUN              // TESTING   RUN
 
 /*
  * There are two choices for the carrier oscilator for the Radio
@@ -390,7 +390,7 @@
 #define   CL_NUM        CL_YELLOW     // Numerical small numbers
 #define   CL_NUM_O      CL_YELLOW     // Step color in CUSTOM_DISP
 #define   CL_NUM_NORM   CL_YELLOW     // Normal Text inside box
-//#define EncoderStep  24
+#define EncoderStep  24
 //#undef  LOCK_OK
 #endif
 
@@ -440,21 +440,20 @@
 
 #if MC_TYPE == WROVER         //Compiler directive for Lilygo T7 Ver 1.5 
 #if BAND_TYPE == ANALOG
-  #define BAND     27           //Analog input from resistor network 80m 3243, 40m 2431, 20m 1622, 15m 813, 10m 0
+  #define BAND     27         //Analog input from resistor network 80m 3243, 40m 2431, 20m 1622, 15m 813, 10m 0
 #else
-  #define INTERRUPTED_PIN 27    // user defined connection to PCF8574 interrupt pin try with 27
+  #define INTERRUPTED_PIN 27  // user defined connection to PCF8574 interrupt pin try with 27
 #endif
 #define cw        2           //mode slector in cw position
 #define DT       25           // DT Encoder A pin, connected to ESP32 pin 4 (GPIO4)
 #define CLK       4           // CLK Encoder B pin, connected to ESP32 pin 25 (GPIO25)
-#define MEM      33           //memory
+#define MEM      35           //memory
 #define STEP     34           //step
-#define SCAN     35           //scan (not in use) 
+#define SCAN     33           //scan (not in use) 
 #define TSDA     21           //Default pins defined in si5351.cpp  
 #define TSCL     22           //Default pins defined in si5351.cpp
 #define VFO      26           //Turn internal VFO on_off uses uses jumper on 9 pin plug
-#define SS1      19           //Norm/opp side band position (pin 13 is inside and pin 12 is outside)
-
+#define SS1      19    
 //#define TX1                 //Transmit sig input to bypass LP Filter (not in use) 
 #define OPT      14           //Free for opt_change function
 #define TFT_MISO -1           //     13 or 37 Not connected -1
@@ -464,8 +463,35 @@
 #define TFT_DC   15           //     14 or 35 or 15
 #define TFT_RST  -1           //     14 or 44 or -1 
 #define LOCK     32           //Lock - To lock the frequency
+#endif
 
-
+#if MC_TYPE == S3V19
+#if BAND_TYPE == ANALOG
+  #define   BAND   15      //Analog input from resistor network 80m 3243, 40m 2431, 20m 1622, 15m 813, 10m 0
+  #define   SS1    11      // Norm/opp side band position
+#else
+  #define INTERRUPTED_PIN 15  // user defined connection to PCF8574 interrupt pin
+  #define   OPT    38       // OPT for opt_change function 
+  #define   TX1    11      // TX1 used to bypass LPF not in use
+  #define   CLOCK  21      // CLOCK use BCD2 Pin
+#endif
+  #define   cw     35      // mode slector in cw position (34)
+  #define   DT     10      // DT pin, connected to ESP32 pin B 
+  #define   CLK     8      // CLK pin, connected to ESP32 pin A 
+  #define   MEM    13      // memory
+  #define   STEP    6      // step 
+  #define   SCAN    7      // scan
+  #define   TSDA   44      // I2C SDA (33) Was RX (44)
+  #define   TSCL   43      // I2C SCL (TX)
+  #define   LOCK    5      // LOCK to lock the frequency  
+  #define   VFO    17      // Turn internal VFO on_off uses uses jumper on 9 pin plug
+  //following pins are for the display
+  #define TFT_MISO -1      // not connected
+  #define TFT_CS   12      // TFT_7
+  #define TFT_MOSI  2      // TFT_4
+  #define TFT_SCLK  1      // TFT_3
+  #define TFT_DC    4      // TFT_6
+  #define TFT_RST   3      // TFT_5 was -1 connected to 3.3V
 #endif
 
 #if MC_TYPE == C3MINI          //WeAct Studio ESP32-C3FH4 or ESP32-C3-Zero
@@ -656,61 +682,47 @@
   #define   VFO     10            //Turn internal VFO on_off uses uses jumper on 9 pin plug
   #define   LOCK    11
   #define   SS1     15
-      
-  #define TFT_CS   34 //     10 or 34 34
-  #define TFT_MOSI 36 //     11 or 36 35
-  #define TFT_SCLK 38 //     12 or 38 36
-  #define TFT_DC   35 //     14 or 35 33
-  #define TFT_RST  44 //     14 or 44 37
+  #define TFT_MISO  -1    
+  #define TFT_CS   5 //     10 or 34 34
+  #define TFT_MOSI  8 //     11 or 36 35
+  #define TFT_SCLK  18 //     12 or 38 36
+  #define TFT_DC   40 //     14 or 35 33
+  #define TFT_RST  -1 //     14 or 44 37
 #endif
 #endif
 
-#if MC_TYPE == S3TEST
-  #if BAND_TYPE == ANALOG                         // Compiler directive if analog resistor matrix is used
-  #define   BAND   21      // user defined connection to PCF8574 interrupt pin
-  #define   cw      4      // mode slector in cw position
-  #define   CLK    16      // CLK pin, connected to ESP32 pin A
-  #define   DT     36      // DT pin, connected to ESP32 pin B
-  #define   MEM    13      // memory
-  #define   STEP   11      // step
-  #define   SCAN   12      // scan 
-  #define   TSDA   34      // I2C SDA 
-  #define   TSCL   38      // I2C SCL   
-  #define   TX1    18      // Transmit sig input to bypass LP Filter (not in use)  
-  #define   OPT    25      // OPT for opt_change function
-  #define   VFO     5      // Turn internal VFO on_off uses uses jumper on 9 pin plug
-  #define   SS1     7      // Norm/opp side band position
-  #define TFT_CS   26      // 10 or 34 34
-  #define TFT_MOSI  8      // 11 or 36 35
-  #define TFT_SCLK  6      // 12 or 38 36
-  #define TFT_DC   10      // 14 or 35 33
-  #define TFT_RST  -1      // 14 or 44 37
-#endif
-#endif
+
 
 
 #if MC_TYPE == D1MINI         //Compiler directive for Lilygo T7 Ver 1.5 
-#define INTERRUPTED_PIN 17    // user defined connection to PCF8574 interrupt pin
+#if BAND_TYPE == DIGITAL
+  #define INTERRUPTED_PIN 17  //PCF8574 interrupt pin set up in pcf8574inputpins.h
+  #ifdef CLOCK_OK
+    #define CLOCK  19           //Free for opt_change function
+  #endif 
+#endif
+#if BAND_TYPE == ANALOG
+  #define BAND   17         //Analog input from resistor network 80m 3243, 40m 2431, 20m 1622, 15m 813, 10m 0
+  #define SS1    19           //Norm/opp side band position (pin 13 is inside and pin 12 is outside)
+#endif
+#define OPT       0           //Free for opt_change function
 #define cw        2           //mode slector in cw position
-#define DT       25           // DT Encoder A pin, connected to ESP32 pin 4 (GPIO4)
-#define CLK       4           // CLK Encoder B pin, connected to ESP32 pin 25 (GPIO25)
+#define DT        4           // DT Encoder A pin, connected to ESP32 pin 4 (GPIO4)
+#define CLK      25           // CLK Encoder B pin, connected to ESP32 pin 25 (GPIO25)
+#define LOCK     32           //Lock - To lock the frequency
 #define MEM      33           //memory
 #define STEP     34           //step
 #define SCAN     35           //scan (not in use) 
 #define TSDA     21           //Default pins defined in si5351.cpp  
 #define TSCL     22           //Default pins defined in si5351.cpp
 #define VFO      26           //Turn internal VFO on_off uses uses jumper on 9 pin plug
-#define SS1      19           //Norm/opp side band position (pin 13 is inside and pin 12 is outside)
-#define BAND     17           //Analog input from resistor network 80m 3243, 40m 2431, 20m 1622, 15m 813, 10m 0
-//#define TX1                 //Transmit sig input to bypass LP Filter (not in use) 
-#define OPT      14           //Free for opt_change function
+//following pins are for the display
 #define TFT_MISO -1           //     13 or 37 Not connected -1
 #define TFT_CS    5           //     10 or 34 or 5
 #define TFT_MOSI 23           //     11 or 36 or 23
 #define TFT_SCLK 18           //     12 or 38 0r 18
 #define TFT_DC   15           //     14 or 35 or 15
 #define TFT_RST  -1           //     14 or 44 or -1 
-#define LOCK     32           //Lock - To lock the frequency
 #endif
 
 #if MC_TYPE == T7S3
@@ -730,12 +742,13 @@
 #define   BAND      3           //Analog input from resistor network
 #define   LOCK     38           //Lock - To lock the frequency
 //following pins are for the display
+#define TFT_MISO -1
+#define TFT_CS    5 //     10 or 34
+#define TFT_MOSI  8 //     11 or 36
+#define TFT_SCLK 18 //     12 or 38
+#define TFT_DC   40 //     14 or 35
+#define TFT_RST  -1 //     14 or 44
 
-#define TFT_CS   34 //     10 or 34
-#define TFT_MOSI 36 //     11 or 36
-#define TFT_SCLK 38 //     12 or 38
-#define TFT_DC   35 //     14 or 35
-#define TFT_RST  44 //     14 or 44
 #if BAND_TYPE == ANALOG                         // Compiler directive if analog resistor matrix is used
 //#define INTERRUPTED_PIN  3    // user defined connection to PCF8574 interrupt pin try with 27
 #define cw        2           //mode slector in cw position
@@ -748,6 +761,7 @@
 #define TSCL     14           //Default pins defined in si5351.cpp
 #define VFO      16           //Turn internal VFO on_off uses uses jumper on 9 pin plug
 #define SS1      17           //Norm/opp side band position (pin 13 is inside and pin 12 is outside)
+#define LOCK     38           //Lock - To lock the frequency
 #define BAND      3           //Analog input from resistor network 80m 3243, 40m 2431, 20m 1622, 15m 813, 10m 0
 //#define TX1                 //Transmit sig input to bypass LP Filter (not in use) 
 #define OPT      14           //Free for opt_change function (TCK)
@@ -755,9 +769,8 @@
 #define TFT_CS    5           //     10 or 34 or 5
 #define TFT_MOSI  8           //     11 or 36 or 23
 #define TFT_SCLK 18           //     12 or 38 0r 18
-#define TFT_DC   15           //     14 or 35 or 15 (TDO)
+#define TFT_DC   40           //     14 or 35 or 15 (TDO)
 #define TFT_RST  -1           //     14 or 44 or -1 
-#define LOCK     38           //Lock - To lock the frequency
 #endif
 #endif
 
