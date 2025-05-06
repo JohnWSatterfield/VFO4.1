@@ -448,9 +448,9 @@
 #define cw        2           //mode slector in cw position
 #define DT       25           // DT Encoder A pin, connected to ESP32 pin 4 (GPIO4)
 #define CLK       4           // CLK Encoder B pin, connected to ESP32 pin 25 (GPIO25)
-#define MEM      35           //memory
+#define MEM      33           //memory
 #define STEP     34           //step
-#define SCAN     33           //scan (not in use) 
+#define SCAN     35           //scan (not in use) 
 #define TSDA     21           //Default pins defined in si5351.cpp  
 #define TSCL     22           //Default pins defined in si5351.cpp
 #define VFO      26           //Turn internal VFO on_off uses uses jumper on 9 pin plug
