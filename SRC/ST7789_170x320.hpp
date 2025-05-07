@@ -101,15 +101,21 @@
 //#define DialBGCol   CL_DIAL_BG
 #define TFT_BLACK2  0x0020  //opaque black
 
-#if MC_TYPE == S3MINI || MC_TYPE == S2MINI || MC_TYPE == S3ZERO || MC_TYPE == R8N16 || MC_TYPE == S3R8 || MC_TYPE == C3ZERO || MC_TYPE == RP2040 || MC_TYPE == C3FH4 || MC_TYPE == C3MINI
-  #define SPIHOST SPI2_HOST  // SPI2_HOST or SPI3_HOST 
-#endif
-#if MC_TYPE == WROVER || MC_TYPE == D1MINI
-  #define SPIHOST HSPI_HOST // VSPI_HOST or HSPI_HOST
-#endif
+//#if MC_TYPE == S3MINI || MC_TYPE == S2MINI || MC_TYPE == S3ZERO || MC_TYPE == T7S3 || MC_TYPE == R8N16 || MC_TYPE == S3R8 || MC_TYPE == C3ZERO || MC_TYPE == RP2040 || MC_TYPE == C3FH4 || MC_TYPE == C3MINI
+//  #define SPIHOST SPI2_HOST  // SPI2_HOST or SPI3_HOST 
+//#endif
+//#if MC_TYPE == WROVER || MC_TYPE == D1MINI
+//  #define SPIHOST HSPI_HOST // VSPI_HOST or HSPI_HOST
+//#endif
 
 //#define LGFX_ESP32_S2
 
+#define SPIHOST SPI2_HOST
+
+#if MC_TYPE == R2040
+ #pragma once
+ #define LGFX_USE_V1
+#endif
 
 #include <LovyanGFX.hpp>
 class LGFX : public lgfx::LGFX_Device
@@ -126,12 +132,16 @@ class LGFX : public lgfx::LGFX_Device
   lgfx::Bus_Parallel8 _bus_instance;
   lgfx::Light_PWM     _light_instance;
   #endif
-  
+  #if MC_TYPE == R2040
+   // lgfx::Panel_ST7789 _panel_instance;
+    //lgfx::Bus_SPI       _bus_instance;
+    lgfx::Light_PWM     _light_instance;
+  #endif
   
 public:
   LGFX(void)
   {
-    #if MC_TYPE != S3R8    
+    #if MC_TYPE != S3R8  && MC_TYPE != R2040  
     { // // Configuring the SPI bus
       auto cfg = _bus_instance.config();    // Get the structure for bus settings.
       cfg.spi_host = SPIHOST;     // Select the SPI to use ESP32-S2,C3: SPI2_HOST or SPI3_HOST / ESP32: VSPI_HOST or HSPI_HOST
@@ -171,6 +181,43 @@ public:
         _panel_instance.setBus(&_bus_instance);      // Place the bus on the panel.
         }
     #endif
+     #if MC_TYPE == R2040
+        {
+        auto cfg = _bus_instance.config();
+        cfg.spi_host   = 0;
+        cfg.spi_mode   = 0;
+        cfg.freq_write = 80000000;
+        cfg.pin_sclk   = TFT_SCLK;
+        cfg.pin_miso   = TFT_MISO;
+        cfg.pin_mosi   = TFT_MOSI;
+        cfg.pin_dc     = TFT_DC;
+        _bus_instance.config(cfg);
+        _panel_instance.setBus(&_bus_instance);
+        }
+     
+    {
+      auto cfg = _panel_instance.config();
+      cfg.pin_cs       = TFT_CS;
+      cfg.pin_rst      = TFT_RST;
+      cfg.panel_width  = 180;
+      cfg.panel_height = 320;
+      cfg.offset_x     = 35;
+      cfg.offset_y     = 0;
+      cfg.invert       = true;
+      cfg.rgb_order    = false;
+      cfg.offset_rotation = 1;
+      _panel_instance.config(cfg);
+    }
+
+    {
+      auto cfg = _light_instance.config();
+      cfg.pin_bl      = TFT_PI;
+      cfg.pwm_channel = 1;
+      _light_instance.config(cfg);
+      _panel_instance.setLight(&_light_instance);
+    }
+    #endif
+   #if MC_TYPE != R2040
     { // Configure display panel control settings.
       auto cfg = _panel_instance.config();    // Gets the structure for display panel settings.
       cfg.pin_cs           =    TFT_CS;   // in number to which CS is connected (-1 = disable)
@@ -208,7 +255,8 @@ public:
       
       _panel_instance.config(cfg);
       
-    }  
+    } 
+   #endif 
    #if MC_TYPE == S3R8 || MC_TYPE == R8N16
     {
       auto cfg = _light_instance.config();
